@@ -1,0 +1,15 @@
+---
+swagger: "2.0"
+info:
+  version: "0.0.0"
+  title: "Smartlocker API"
+paths:
+  /:
+    get:
+      operationId: "rootGET"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+      x-swagger-router-controller: "Default"
+definitions: {}
