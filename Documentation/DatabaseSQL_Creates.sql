@@ -37,10 +37,10 @@ create table ingredient(
 	primary key(id)
 );
 
-create table order(
+create table orders(
 	id int(10) not null unique,
 	combo_id int(10) not null,
-	datestamp date not null, -- not in ERM but might be usefull for a order
+	datestamp date not null, -- not in ERM but might be usefull for a orders
 	primary key(id),
 	foreign key(combo_id) references combo
 );
@@ -60,9 +60,9 @@ create table locker(
 create table locker_schedule(
 	pickup_time time(7) not null,
 	locker_nr int(10) not null,
-	order_id int(10) not null,
-	primary key(pickup_time, locker_nr, order_id),
+	orders_id int(10) not null,
+	primary key(pickup_time, locker_nr, orders_id),
 	foreign	key(pickup_time) references schedule,
 	foreign key (locker_nr) references locker,
-	foreign key(order_id) references order
+	foreign key(orders_id) references orders
 );
