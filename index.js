@@ -7,9 +7,7 @@ var fs = require('fs'),
 var app = require('connect')();
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
-
-// Load some small snippets for easy use
-require('./snippets');
+var serverPort = 8080;
 
 // swaggerRouter configuration
 var options = {
@@ -37,24 +35,10 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Serve the Swagger documents and Swagger UI
   app.use(middleware.swaggerUi());
 
-//  createStatic({ dir: 'web/css' }, function (err, middleware) {
-//    if (err) throw err;
-//    app.use('/css', middleware);
-//    createStatic({ dir: 'web/js' }, function (err, middleware) {
-//      if (err) throw err;
-//      app.use('/js', middleware);
-//      createStatic({ dir: 'web/fonts' }, function (err, middleware) {
-//        if (err) throw err;
-//        app.use('/fonts', middleware);
+  // Start the server
+  http.createServer(app).listen(serverPort, function () {
+    console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+    console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+  });
 
-        // Get Port for production
-        var port = process.env.PORT || 8080;
-        // Start the server
-        http.createServer(app).listen(port, function () {
-          console.log('Your server is listening on port %d (http://localhost:%d)', port, port);
-          console.log('Swagger-ui is available on http://localhost:%d/docs', port);
-        });
-      //});
-    //});
-  //});
 });
