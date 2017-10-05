@@ -1,0 +1,18 @@
+.container{
+  background-image: url(StudyQuiz.jpg);
+  background-repeat: no-repeat;
+  background-position: 5% 75%;
+  background-size: 15%;
+
+}
+
+.jumbotron{
+  background-color: #95cfe8;
+  opacity: 0.9;
+  filter: alpha (opacity=70);
+
+}
+
+.header{
+  color: #00577c;
+}

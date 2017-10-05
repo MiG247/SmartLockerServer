@@ -6,10 +6,15 @@ info:
 paths:
   /:
     get:
-      operationId: "rootGET"
+      tags:
+      - "Smartlocker"
+      description: "Return the landing page."
+      operationId: "getHtml"
+      produces:
+      - "text/html"
       parameters: []
       responses:
         200:
           description: "OK"
-      x-swagger-router-controller: "Default"
+      x-swagger-router-controller: "Smartlocker"
 definitions: {}
