@@ -34,6 +34,18 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
   // Serve the Swagger documents and Swagger UI
   app.use(middleware.swaggerUi());
+    createStatic({ dir: 'web/css' }, function (err, middleware) {
+      if (err) throw err;
+        app.use('/css', middleware);
+          createStatic({ dir: 'web/js' }, function (err, middleware) {
+            if (err) throw err;
+              app.use('/js', middleware);
+                createStatic({ dir: 'web/fonts' }, function (err, middleware) {
+                  if (err) throw err;
+                    app.use('/fonts', middleware);
+                    //Get Port for production
+                    var port = process.env.PORT || 8080;
+
 
   // Start the server
   http.createServer(app).listen(serverPort, function () {
