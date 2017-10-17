@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 var fs = require('fs'),
     path = require('path'),
     http = require('http');
@@ -8,6 +8,17 @@ var app = require('connect')();
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
 var serverPort = 8080;
+*/
+
+var app = require('connect')();
+var http = require('http');
+var swaggerTools = require('swagger-tools');
+var createStatic = require('connect-static');
+var jsyaml = require('js-yaml');
+var fs = require('fs');
+
+// Load some small snippets for easy use
+require('./snippets');
 
 // swaggerRouter configuration
 var options = {
@@ -35,10 +46,23 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Serve the Swagger documents and Swagger UI
   app.use(middleware.swaggerUi());
 
-  // Start the server
-  http.createServer(app).listen(serverPort, function () {
-    console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+  createStatic({ dir: 'web/css' }, function (err, middleware) {
+    if (err) throw err;
+    app.use('/css', middleware);
+    createStatic({ dir: 'web/js' }, function (err, middleware) {
+      if (err) throw err;
+      app.use('/js', middleware);
+      createStatic({ dir: 'web/fonts' }, function (err, middleware) {
+        if (err) throw err;
+        app.use('/fonts', middleware);
+        // Get Port for production
+        var serverPort = process.env.PORT || 8080;
+        // Start the server
+        http.createServer(app).listen(serverPort, function () {
+          console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
+          console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+        });
+      });
+    });
   });
-
 });
