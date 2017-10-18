@@ -4,14 +4,14 @@ create table combo(
 	id int(10) not null unique,
 	name char(255) not null unique,
 	price float(10) not null,
-	photo BLOB,
+	photo LONGBLOB,
 	primary key(id)
 );
 
 create table food(
 	id int(10) not null unique,
 	name char(255) not null unique,
-	photo BLOB,
+	photo LONGBLOB,
 	primary key(id)
 );
 
