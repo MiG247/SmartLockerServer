@@ -10,8 +10,6 @@ var jsyaml = require('js-yaml');
 var serverPort = 8080;
 */
 
-//#method
-
 var app = require('connect')();
 var http = require('http');
 var swaggerTools = require('swagger-tools');
