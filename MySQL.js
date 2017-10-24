@@ -14,7 +14,7 @@ var mysql_db = mysql.createConnection({
 var mysql_db = mysql.createConnection({
   host: 'localhost',
   user: 'mysql',
-  password: '',
+  password: '5cd207bf82a60c0d',
   database: 'smartlocker_db'
 });
 // Connect to DB
