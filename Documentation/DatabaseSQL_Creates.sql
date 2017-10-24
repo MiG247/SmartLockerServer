@@ -36,7 +36,7 @@ create table locker(
 create table orders(
 	id int(10) not null unique auto_increment,
 	combo_id int(10) not null,
-	datestamp date not null, -- not in ERM but might be usefull for a orders
+	datestamp date not null, -- not in ERM but might be usefull for an order
 	primary key(id),
 	foreign key(combo_id) references combo (id)
 );
