@@ -33,9 +33,7 @@ exports.getComboArray = function(args, res, next) {
    * offset Integer Start index of the source (optional)
    * returns List
    **/
-   let query = '\
-    SELECT id, name, price \
-    FROM combo';
+   let query = 'SELECT id, name, price FROM combo';
 
    res.setHeader('Content-Type', 'application/json');
 
@@ -48,4 +46,26 @@ exports.getComboArray = function(args, res, next) {
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
    });
+}
+
+
+exports.getTimeSchedule = function(args, res, next) {
+  /**
+   * Gets an array of 'timeschedule' objects.
+   *
+   * returns List
+   **/
+  let query = 'SELECT * FROM schedule';
+
+  res.setHeader('Content-Type', 'application/json');
+
+  db.mysql_db.query(query, (err, rows, fields) => {
+    if (err) {
+      return res.end(JSON.stringify({
+        status: 500,
+        message: err}));
+    }
+      res.statusCode = 200;
+      res.end(JSON.stringify(rows));
+    });
 }

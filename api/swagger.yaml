@@ -23,11 +23,12 @@ paths:
         200:
           description: "OK"
       x-swagger-router-controller: "Smartlocker"
+
   /combo:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets a array of 'user' objects."
+      description: "Gets an array of 'combo' objects."
       operationId: "getComboArray"
       parameters:
       - $ref: "#/parameters/size"
@@ -39,9 +40,35 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Combo"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
         default:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
+
+  /timeschedule:
+    get:
+      tags:
+      - "Smartlocker"
+      description: "Gets an array of 'timeschedule' objects."
+      operationId: "getTimeSchedule"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/TimeSchedule"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+
 
 ################################################################################
 #                                     Definitions                              #
@@ -62,6 +89,28 @@ definitions:
         type: "number"
         format: "float"
 
+  TimeSchedule:
+    type: "object"
+    properties:
+      pickup_time:
+        type: "string"
+        format: "date-time"
+        example: "10:30"
+      available:
+        type: "boolean"
+        example: "true"
+
+  ErrorModel:
+    type: "object"
+    properties:
+      status:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+      err:
+        type: "string"
+
 ################################################################################
 #                                   Parameters                                 #
 ################################################################################
@@ -74,6 +123,7 @@ parameters:
     required: false
     type: "integer"
     format: "int32"
+
   offset:
     name: "offset"
     in: "query"

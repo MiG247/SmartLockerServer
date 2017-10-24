@@ -12,3 +12,7 @@ module.exports.getHtml = function getHtml (req, res, next) {
 module.exports.getComboArray = function getComboArray (req, res, next) {
   Smartlocker.getComboArray(req.swagger.params, res, next);
 };
+
+module.exports.getTimeSchedule = function getTimeSchedule (req, res, next) {
+  Smartlocker.getTimeSchedule(req.swagger.params, res, next);
+};
