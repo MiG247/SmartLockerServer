@@ -1,8 +1,14 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.0.0"
+  version: "1.0.0"
   title: "Smartlocker API"
+
+################################################################################
+#                                           Paths                              #
+################################################################################
+
+
 paths:
   /:
     get:
@@ -17,4 +23,61 @@ paths:
         200:
           description: "OK"
       x-swagger-router-controller: "Smartlocker"
-definitions: {}
+  /combo:
+    get:
+      tags:
+      - "Smartlocker"
+      description: "Gets a array of 'user' objects."
+      operationId: "getComboArray"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Combo"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+
+################################################################################
+#                                     Definitions                              #
+################################################################################
+
+definitions:
+  Combo:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+        example: 3
+      name:
+        type: "string"
+        example: "combo 1"
+      price:
+        type: "number"
+        format: "float"
+
+################################################################################
+#                                   Parameters                                 #
+################################################################################
+
+parameters:
+  size:
+    name: "size"
+    in: "query"
+    description: "Size of array to receive"
+    required: false
+    type: "integer"
+    format: "int32"
+  offset:
+    name: "offset"
+    in: "query"
+    description: "Start index of the source"
+    required: false
+    type: "integer"
+    format: "int32"
