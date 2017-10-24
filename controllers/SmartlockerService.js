@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const db = require('../MySQL');
 
 exports.getHtml = function (req, res, next) {
   /**
@@ -21,5 +22,30 @@ exports.getHtml = function (req, res, next) {
      data = data.replace(/{{link}}/g, req.url);
      res.statusCode = 200;
      res.end(data);
+   });
+}
+
+exports.getComboArray = function(args, res, next) {
+  /**
+   * Gets an array of 'user' objects.
+   *
+   * size Integer Size of array to receive (optional)
+   * offset Integer Start index of the source (optional)
+   * returns List
+   **/
+   let query = '\
+    SELECT id, name, price \
+    FROM combo';
+
+   res.setHeader('Content-Type', 'application/json');
+
+   db.mysql_db.query(query, (err, rows, fields) => {
+     if (err) {
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err}));
+     }
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
    });
 }

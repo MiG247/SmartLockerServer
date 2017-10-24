@@ -1,7 +1,9 @@
+'use strict';
+
 var mysql = require('mysql');
 
 //Connection Variables needs to be adjusted !!!
-var mysql_db= mysql.createConnection({
+var mysql_db = mysql.createConnection({
   host: 'localhost',
   user: 'maik',
   password: 'test123',
@@ -10,18 +12,11 @@ var mysql_db= mysql.createConnection({
 
 // Connect to DB
 mysql_db.connect((err) => {
-  if(err){
-    throw err;
-  }
-  console.log('MySQL connected ...');
-});
-
-// get manue card
-var getManueQuery = mysql_db.query('select * from combo',
-function (err, result) {
-  if(err){
-    console.error(err);
+    if(err){
+      throw err;
+    }
+    console.log('MySQL Database connected ...');
     return;
-  }
-  console.log(result);
-});
+  });
+
+exports.mysql_db = mysql_db;
