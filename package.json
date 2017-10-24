@@ -16,7 +16,6 @@
     "connect": "^3.6.5",
     "connect-static": "^1.5.2",
     "js-yaml": "^3.10.0",
-    "mysql": "^2.15.0",
     "swagger-tools": "^0.10.1"
   }
 }
