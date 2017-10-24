@@ -3,6 +3,29 @@
 const fs = require('fs');
 const db = require('../MySQL');
 
+exports.getOrder = function(args, res, next) {
+  /**
+   * Gets the basic informations from an oreder
+   *
+   * orderID Integer The order identifier number
+   * returns Order
+   **/
+
+   let query = 'SELECT id, combo_id, datestamp FROM orders WHERE id='+;
+
+   res.setHeader('Content-Type', 'application/json');
+
+   db.mysql_db.query(query, (err, rows, fields) => {
+     if (err) {
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err}));
+     }
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+
 exports.getHtml = function (req, res, next) {
   /**
    * Returns the landing page.

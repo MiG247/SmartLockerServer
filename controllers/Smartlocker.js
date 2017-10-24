@@ -16,3 +16,7 @@ module.exports.getComboArray = function getComboArray (req, res, next) {
 module.exports.getTimeSchedule = function getTimeSchedule (req, res, next) {
   Smartlocker.getTimeSchedule(req.swagger.params, res, next);
 };
+
+module.exports.getOrder = function getOrder (req, res, next) {
+  Smartlocker.getOrder(req.swagger.params, res, next);
+};
