@@ -18,6 +18,7 @@ var mysql_db = mysql.createConnection({
   password: '5cd207bf82a60c0d',
   database: 'smartlocker_db'
 });
+
 // Connect to DB
 mysql_db.connect((err) => {
     if(err){
