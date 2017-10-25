@@ -3,6 +3,56 @@
 const fs = require('fs');
 const db = require('../MySQL');
 
+//exports.setOrder = function(args, res, next) {
+  /**
+   * Requests an order and gets a orderID back if successed
+   *
+   * comboID Integer The combo identifier number
+   * pickupTime Date The time from schedule
+   * returns Order/properties/id
+   **/
+/*
+   db.mysql_db.query()
+
+   let query = 'SELECT id, combo_id, datestamp FROM orders WHERE id='+escape(args.orderID.value);
+
+   res.setHeader('Content-Type', 'application/json');
+
+   db.mysql_db.query(query, (err, rows, fields) => {
+     if (err) {
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err}));
+     }
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+*/
+
+exports.getComboFood = function(args, res, next) {
+  /**
+   * Gets the basic informations from a combo the food
+   *
+   * comboID Integer The combo identifier number
+   * returns List
+   **/
+   let query = 'SELECT id, name FROM food WHERE id IN (SELECT food_id \
+     FROM food_combo WHERE combo_id ='+escape(args.combo_id.value)+')';
+
+   res.setHeader('Content-Type', 'application/json');
+
+   db.mysql_db.query(query, (err, rows, fields) => {
+     if (err) {
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err}));
+     }
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+
 exports.getOrder = function(args, res, next) {
   /**
    * Gets the basic informations from an oreder

@@ -69,13 +69,35 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
+  /order:
+    post:
+      tags:
+      - "Smartlocker"
+      description: "Requests an order and gets a orderID back if successed"
+      operationId: "setOrder"
+      parameters:
+      - $ref: "#/parameters/comboID"
+      - $ref: "#/parameters/pickupTime"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Order/properties/id"
+        404:
+          description: "Not Found"
+        406:
+          description: "Order Not Accepted"
+        default:
+          description: "unexprected error"
+      x-swagger-router-controller: "Smartlocker"
+
   /order/{orderID}:
     parameters:
     - $ref: "#/parameters/orderID"
     get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from an oreder"
+      description: "Gets the basic informations from an order"
       operationId: "getOrder"
       parameters: []
       responses:
@@ -89,11 +111,44 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
+  /combo/food/{combo_id}:
+    parameters:
+    - $ref: "#/parameters/combo_id"
+    get:
+      tags:
+      - "Smartlocker"
+      description: "Gets the basic informations from a combo the food"
+      operationId: "getComboFood"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/Food"
+        404:
+          description: "Not Found"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
 
 definitions:
+  Food:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+        example: 34
+      name:
+        type: "string"
+        example: "Cooked Rice"
+
   Order:
     type: "object"
     properties:
@@ -151,6 +206,29 @@ definitions:
 ################################################################################
 
 parameters:
+  comboID:
+    name: "comboID"
+    in: "query"
+    description: "The combo identifier number"
+    required: true
+    type: "integer"
+    format: "int32"
+
+  combo_id:
+    name: "combo_id"
+    in: "path"
+    description: "The combo identifier number"
+    required: true
+    type: "integer"
+    format: "int32"
+
+  pickupTime:
+    name: "pickupTime"
+    in: "query"
+    description: "The time from schedule"
+    required: true
+    type: "string"
+    format: "date-time"
   orderID:
     name: "orderID"
     in: "path"
