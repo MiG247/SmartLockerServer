@@ -69,12 +69,47 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
+  /order/{orderID}:
+    parameters:
+    - $ref: "#/parameters/orderID"
+    get:
+      tags:
+      - "Smartlocker"
+      description: "Gets the basic informations from an oreder"
+      operationId: "getOrder"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Order"
+        404:
+          description: "Not Found"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
 
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
 
 definitions:
+  Order:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+        example: 32
+      combo_id:
+        type: "integer"
+        format: "int32"
+        example: 21
+      datestamp:
+        type: "string"
+        format: "date-time"
+        example: "1985-04-12T23:20:50Z"
+
   Combo:
     type: "object"
     properties:
@@ -116,6 +151,13 @@ definitions:
 ################################################################################
 
 parameters:
+  orderID:
+    name: "orderID"
+    in: "path"
+    description: "The order identifier number"
+    required: true
+    type: "integer"   #should be change to String cause it's guessable
+    format: "int32"
   size:
     name: "size"
     in: "query"
