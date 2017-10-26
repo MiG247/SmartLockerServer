@@ -2,6 +2,8 @@
 
 const fs = require('fs');
 const db = require('../MySQL');
+const uuidv4 = require('uuid/v4');
+
 
 //exports.setOrder = function(args, res, next) {
   /**
@@ -12,9 +14,47 @@ const db = require('../MySQL');
    * returns Order/properties/id
    **/
 /*
-   db.mysql_db.query()
+   let availableQuery = 'SELECT available FROM schedule WHERE pickup_time ='
+   +escape(args.pickupTime.value);
 
-   let query = 'SELECT id, combo_id, datestamp FROM orders WHERE id='+escape(args.orderID.value);
+   db.mysql_db.query(availableQuery, (err, rows) =>{
+     if(err){
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err}));
+     }
+     if(rows[0].available == 1){
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Order Not Accepted. Time is not available."
+       }));
+     }
+     let query = 'INSERT orders'
+   });
+*/
+/*
+  if( db.mysql_db.query(availableQuery, (err, rows, fields) =>{
+     if(err){
+       console.error("failed");
+       return true;
+     }
+     if(rows[0].available == 1){
+  //      availableVar = false;
+        console.log("rows.value == 1");
+        return false;
+     }else {
+       console.log("rows.value != 1");
+       return true;
+     }
+   }).value == true){
+     console.log("rows.vlaue !=1");
+   }else {
+     console.log("rows.value == 1, you can proccess");
+   }
+*/
+/*
+   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id='
+   +escape(args.orderID.value);
 
    res.setHeader('Content-Type', 'application/json');
 
@@ -27,8 +67,9 @@ const db = require('../MySQL');
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
    });
-}
 */
+//}
+
 
 exports.getComboFood = function(args, res, next) {
   /**
@@ -60,7 +101,7 @@ exports.getOrder = function(args, res, next) {
    * orderID Integer The order identifier number
    * returns Order
    **/
-   let query = 'SELECT id, combo_id, datestamp FROM orders WHERE id='+escape(args.orderID.value);
+   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id='+escape(args.orderID.value);
 
    res.setHeader('Content-Type', 'application/json');
 

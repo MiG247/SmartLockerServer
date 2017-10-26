@@ -10,13 +10,13 @@ var mysql_db = mysql.createConnection({
   database: 'smartlocker_db'
 });
 
-// Connect to DB
+//connect to the DB
 mysql_db.connect((err) => {
-    if(err){
-      throw err;
-    }
-    console.log('MySQL Database connected ...');
-    return;
-  });
+      if(err){
+        throw err;
+      }
+      console.log('MySQL Database connected ...');
+      return;
+});
 
 exports.mysql_db = mysql_db;

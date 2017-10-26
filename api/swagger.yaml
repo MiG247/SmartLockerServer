@@ -153,14 +153,13 @@ definitions:
     type: "object"
     properties:
       id:
-        type: "integer"
-        format: "int32"
-        example: 32
+        type: "string"
+        example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
       combo_id:
         type: "integer"
         format: "int32"
         example: 21
-      datestamp:
+      ordered_at:
         type: "string"
         format: "date-time"
         example: "1985-04-12T23:20:50Z"
@@ -229,13 +228,14 @@ parameters:
     required: true
     type: "string"
     format: "date-time"
+
   orderID:
     name: "orderID"
     in: "path"
-    description: "The order identifier number"
+    description: "The order identifier string"
     required: true
-    type: "integer"   #should be change to String cause it's guessable
-    format: "int32"
+    type: "string"
+
   size:
     name: "size"
     in: "query"
