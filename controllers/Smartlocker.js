@@ -24,7 +24,7 @@ module.exports.getOrder = function getOrder (req, res, next) {
 module.exports.setOrder = function setOrder (req, res, next) {
   Smartlocker.setOrder(req.swagger.params, res, next);
 };
-*//
+*/
 module.exports.getComboFood = function getComboFood (req, res, next) {
   Smartlocker.getComboFood(req.swagger.params, res, next);
 };

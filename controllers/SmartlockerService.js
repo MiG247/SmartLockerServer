@@ -101,7 +101,8 @@ exports.getOrder = function(args, res, next) {
    * orderID Integer The order identifier number
    * returns Order
    **/
-   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id='+escape(args.orderID.value);
+   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id = \''
+   +escape(args.orderID.value)+'\'';
 
    res.setHeader('Content-Type', 'application/json');
 
