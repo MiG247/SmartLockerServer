@@ -15,7 +15,7 @@ var mysql_db = mysql.createConnection({
   host: 'dokku-mysql-smartlocker-db',
   port: 3306,
   user: 'mysql',
-  password: '5cd207bf82a60c0d',
+  password: 'fe3cf2b05c616972',
   database: 'smartlocker_db'
 });
 
