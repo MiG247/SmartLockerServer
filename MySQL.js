@@ -7,7 +7,8 @@ var mysql_db = mysql.createConnection({
   host: 'localhost',
   user: 'maik',
   password: 'test123',
-  database: 'smartlocker_db'
+  database: 'smartlocker_db',
+  multipleStatements: true
 });
 
 //connect to the DB
