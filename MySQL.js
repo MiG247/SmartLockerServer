@@ -5,9 +5,9 @@ var mysql = require('mysql');
 //Connection Variables needs to be adjusted !!!
 var mysql_db = mysql.createConnection({
   host: 'localhost',
-  user: 'maik',
+  user: 'RobertMarxreiter',
   password: 'test123',
-  database: 'smartlocker_db'
+  database: 'mysql_server'
 });
 
 // Connect to DB
