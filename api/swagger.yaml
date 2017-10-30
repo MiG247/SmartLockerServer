@@ -103,7 +103,7 @@ paths:
         200:
           description: "OK"
           schema:
-            $ref: "#/definitions/Order"
+            $ref: "#/definitions/UserOrder"
         404:
           description: "Not Found"
         default:
@@ -159,6 +159,34 @@ paths:
 ################################################################################
 
 definitions:
+
+  UserOrder:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
+      combo_id:
+        type: "integer"
+        format: "int32"
+        example: 21
+      ordered_at:
+        type: "string"
+        format: "date-time"
+        example: "1985-04-12T23:20:50Z"
+      pickup_time:
+        type: "string"
+        format: "date-time"
+        example: "10:30"
+      locker_nr:
+        type: "integer"
+        format: "int32"
+        example: 1002
+      pin:
+        type: "integer"
+        format: "int32"
+        example: 6832
+        
   Locker_Schedule:
     type: "object"
     properties:
@@ -173,18 +201,6 @@ definitions:
       orders_id:
         type: "string"
         example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
-
-  Locker:
-    type: "object"
-    properties:
-      nr:
-        type: "integer"
-        format: "int32"
-        example: 1002
-      PIN:
-        type: "integer"
-        format: "int32"
-        example: 6487
 
   Ingredient:
     type: "object"
@@ -207,21 +223,6 @@ definitions:
       name:
         type: "string"
         example: "Cooked Rice"
-
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "string"
-        example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
-      combo_id:
-        type: "integer"
-        format: "int32"
-        example: 21
-      ordered_at:
-        type: "string"
-        format: "date-time"
-        example: "1985-04-12T23:20:50Z"
 
   Combo:
     type: "object"

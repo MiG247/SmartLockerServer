@@ -109,11 +109,12 @@ exports.getOrder = function(args, res, next) {
    * orderID Integer The order identifier number
    * returns Order
    **/
-   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id = \''
-   +escape(args.orderID.value)+'\'';
+   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, locker_nr, pin FROM orders, locker_schedule, locker\
+   WHERE id = \''+escape(args.orderID.value)+'\' AND orders_id = \''+escape(args.orderID.value)+'\'\
+   AND nr = locker_nr';
 
    res.setHeader('Content-Type', 'application/json');
-
+   
    db.mysql_db.query(query, (err, rows, fields) => {
      if (err) {
        return res.end(JSON.stringify({
@@ -149,27 +150,6 @@ SELECT food_id FROM food_combo WHERE combo_id ='+escape(args.combo_id.value)+'))
     });
 }
 
-exports.getOrder = function(args, res, next) {
-  /**
-   * Gets the basic informations from an oreder
-   *
-   * orderID Integer The order identifier number
-   * returns Order
-   **/
-   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id=\''+escape(args.orderID.value)+'\'';
-
-   res.setHeader('Content-Type', 'application/json');
-
-   db.mysql_db.query(query, (err, rows, fields) => {
-     if (err) {
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err}));
-     }
-     res.statusCode = 200;
-     res.end(JSON.stringify(rows));
-   });
-}
 
 exports.getHtml = function (req, res, next) {
   /**
