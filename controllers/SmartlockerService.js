@@ -58,6 +58,8 @@ exports.setOrder = function(args, res, next) {
          INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
          VALUES(\''+pickupTime+'\','+lockerNR+',\''+uuid+'\');'
 
+        res.setHeader('Content-Type', 'application/json');
+
           db.mysql_db.query(insertOrderQuery, (err, rows) => {
              if (err) {
                return res.end(JSON.stringify({
@@ -109,6 +111,52 @@ exports.getOrder = function(args, res, next) {
    **/
    let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id = \''
    +escape(args.orderID.value)+'\'';
+
+   res.setHeader('Content-Type', 'application/json');
+
+   db.mysql_db.query(query, (err, rows, fields) => {
+     if (err) {
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err}));
+     }
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+
+exports.getComboIngredient = function(args, res, next) {
+    /**
+     * Gets the basic information from the ingredients
+     *
+     * combo_id Integer the combo identifier number
+     * returns List
+     **/
+    let query = 'SELECT name FROM ingredient WHERE id IN(\
+SELECT ingredient_id FROM food_ingredient WHERE food_id IN(\
+SELECT food_id FROM food_combo WHERE combo_id ='+escape(args.combo_id.value)+'))';
+
+    res.setHeader('Content-Type', 'application/json');
+
+    db.mysql_db.query(query, (err, rows, fields) => {
+        if (err) {
+            return res.end(JSON.stringify({
+                status: 500,
+                message: err}));
+        }
+        res.statusCode = 200;
+        res.end(JSON.stringify(rows));
+    });
+}
+
+exports.getOrder = function(args, res, next) {
+  /**
+   * Gets the basic informations from an oreder
+   *
+   * orderID Integer The order identifier number
+   * returns Order
+   **/
+   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id=\''+escape(args.orderID.value)+'\'';
 
    res.setHeader('Content-Type', 'application/json');
 
