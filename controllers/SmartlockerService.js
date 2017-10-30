@@ -113,6 +113,8 @@ exports.getOrder = function(args, res, next) {
    WHERE id = \''+escape(args.orderID.value)+'\' AND orders_id = \''+escape(args.orderID.value)+'\'\
    AND nr = locker_nr';
 
+   res.setHeader('Content-Type', 'application/json');
+   
    db.mysql_db.query(query, (err, rows, fields) => {
      if (err) {
        return res.end(JSON.stringify({
@@ -121,16 +123,6 @@ exports.getOrder = function(args, res, next) {
      }
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
-     /*
-     res.end(JSON.stringify({
-       id: rows[0].id,
-       combo_id: rows[0].combo_id,
-       ordered_at: rows[0].ordered_at,
-       pickup_time: rows[0].pickup_time,
-       locker_nr: rows[0].locker_nr,
-       pin: rows[0].pin
-     }));
-     */
    });
 }
 
