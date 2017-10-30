@@ -17,6 +17,7 @@ var mysql_db = mysql.createConnection({
   user: 'mysql',
   password: '5cd207bf82a60c0d',
   database: 'smartlocker_db'
+  multipleStatements: true
 });
 */
 //connect to the DB
