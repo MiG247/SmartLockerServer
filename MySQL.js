@@ -16,7 +16,7 @@ var mysql_db = mysql.createConnection({
   port: 3306,
   user: 'mysql',
   password: 'fe3cf2b05c616972',
-  database: 'smartlocker_db'
+  database: 'smartlocker_db',
   multipleStatements: true
 });
 
