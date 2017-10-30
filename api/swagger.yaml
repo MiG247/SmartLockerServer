@@ -82,7 +82,7 @@ paths:
         200:
           description: "OK"
           schema:
-            $ref: "#/definitions/Order/properties/id"
+            $ref: "#/definitions/Locker_Schedule"
         404:
           description: "Not Found"
         406:
@@ -138,6 +138,34 @@ paths:
 ################################################################################
 
 definitions:
+  Locker_Schedule:
+    type: "object"
+    properties:
+      pickup_time:
+        type: "string"
+        format: "date-time"
+        example: "10:30"
+      locker_nr:
+        type: "integer"
+        format: "int32"
+        example: 1002
+      orders_id:
+        type: "string"
+        example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
+
+
+  Locker:
+    type: "object"
+    properties:
+      nr:
+        type: "integer"
+        format: "int32"
+        example: 1002
+      PIN:
+        type: "integer"
+        format: "int32"
+        example: 6487
+
   Food:
     type: "object"
     properties:
@@ -227,7 +255,6 @@ parameters:
     description: "The time from schedule"
     required: true
     type: "string"
-    format: "date-time"
 
   orderID:
     name: "orderID"

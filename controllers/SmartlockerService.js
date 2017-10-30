@@ -5,7 +5,7 @@ const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
 
 
-//exports.setOrder = function(args, res, next) {
+exports.setOrder = function(args, res, next) {
   /**
    * Requests an order and gets a orderID back if successed
    *
@@ -13,9 +13,14 @@ const uuidv4 = require('uuid/v4');
    * pickupTime Date The time from schedule
    * returns Order/properties/id
    **/
-/*
-   let availableQuery = 'SELECT available FROM schedule WHERE pickup_time ='
-   +escape(args.pickupTime.value);
+   var find = '%3A';
+   var re = new RegExp(find);
+   var pickupTime = escape(args.pickupTime.value);
+   var comboID = escape(args.comboID.value);
+   pickupTime = pickupTime.replace(re, ':');
+
+   let availableQuery = 'SELECT available FROM schedule WHERE pickup_time =\''
+   +pickupTime+'\'';
 
    db.mysql_db.query(availableQuery, (err, rows) =>{
      if(err){
@@ -23,52 +28,53 @@ const uuidv4 = require('uuid/v4');
          status: 500,
          message: err}));
      }
-     if(rows[0].available == 1){
+     if(rows[0].available == 0){
        return res.end(JSON.stringify({
          status: 406,
          message: "Order Not Accepted. Time is not available."
        }));
-     }
-     let query = 'INSERT orders'
-   });
-*/
-/*
-  if( db.mysql_db.query(availableQuery, (err, rows, fields) =>{
-     if(err){
-       console.error("failed");
-       return true;
-     }
-     if(rows[0].available == 1){
-  //      availableVar = false;
-        console.log("rows.value == 1");
-        return false;
      }else {
-       console.log("rows.value != 1");
-       return true;
-     }
-   }).value == true){
-     console.log("rows.vlaue !=1");
-   }else {
-     console.log("rows.value == 1, you can proccess");
-   }
-*/
-/*
-   let query = 'SELECT id, combo_id, ordered_at FROM orders WHERE id='
-   +escape(args.orderID.value);
+       // check for available locker
+       let getAvailableLockerQuery = 'SELECT nr FROM locker WHERE NOT nr IN \
+       (SELECT locker_nr FROM locker_schedule WHERE pickup_time= \''+pickupTime+'\')';
+       db.mysql_db.query(getAvailableLockerQuery, (err, rows) =>{
+         if(err){
+           return res.end(JSON.stringify({
+             status: 500,
+             message: err
+           }));
+         }
+         let insertOrderQuery = '';
 
-   res.setHeader('Content-Type', 'application/json');
+         if(rows.length == 1){
+           insertOrderQuery = 'UPDATE schedule SET available = 0 WHERE pickup_time = \
+           \''+pickupTime+'\';';
+         }
+         // insert Order function
+         var lockerNR = rows[0].nr;
+         var uuid = uuidv4();
+         insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id) \
+         VALUES(\''+uuid+'\','+comboID+'); \
+         INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
+         VALUES(\''+pickupTime+'\','+lockerNR+',\''+uuid+'\');'
 
-   db.mysql_db.query(query, (err, rows, fields) => {
-     if (err) {
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err}));
-     }
-     res.statusCode = 200;
-     res.end(JSON.stringify(rows));
+          db.mysql_db.query(insertOrderQuery, (err, rows) => {
+             if (err) {
+               return res.end(JSON.stringify({
+                 status: 500,
+                 message: err}));
+             }
+               res.statusCode = 200;
+               res.end(JSON.stringify({
+                 pickup_time: pickupTime,
+                 locker_nr: lockerNR,
+                 orders_id: uuid
+               }));
+             });
+        });
+      }
    });
-*/
-//}
+}
 
 
 exports.getComboFood = function(args, res, next) {
