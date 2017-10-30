@@ -1,4 +1,3 @@
----
 swagger: "2.0"
 info:
   version: "1.0.0"
@@ -133,6 +132,28 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
+  /combo/ingredient/{combo_id}:
+     parameters:
+     - $ref: "#/parameters/combo_id"
+     get:
+      tags:
+      - "Smartlocker"
+      description: "Gets the basic informations from the food"
+      operationId: "getComboIngredient"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Ingredient"
+        404:
+          description: "Not Found"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
@@ -153,7 +174,6 @@ definitions:
         type: "string"
         example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
 
-
   Locker:
     type: "object"
     properties:
@@ -165,6 +185,17 @@ definitions:
         type: "integer"
         format: "int32"
         example: 6487
+
+  Ingredient:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int32"
+        example: 22
+      name:
+        type: "string"
+        example: "Raw Rice"
 
   Food:
     type: "object"
