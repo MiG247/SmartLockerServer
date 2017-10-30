@@ -3,7 +3,6 @@
 var mysql = require('mysql');
 
 //Connection Variables needs to be adjusted !!!
-/*
 var mysql_db = mysql.createConnection({
   host: 'localhost',
   user: 'maik',
@@ -11,7 +10,7 @@ var mysql_db = mysql.createConnection({
   database: 'smartlocker_db',
   multipleStatements: true
 });
-*/
+/*
 var mysql_db = mysql.createConnection({
   host: 'dokku-mysql-smartlocker-db',
   port: 3306,
@@ -19,7 +18,7 @@ var mysql_db = mysql.createConnection({
   password: '5cd207bf82a60c0d',
   database: 'smartlocker_db'
 });
-
+*/
 //connect to the DB
 mysql_db.connect((err) => {
       if(err){

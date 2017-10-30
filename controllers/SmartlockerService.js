@@ -13,8 +13,11 @@ exports.setOrder = function(args, res, next) {
    * pickupTime Date The time from schedule
    * returns Order/properties/id
    **/
-   var pickupTime =escape(args.pickupTime.value);
-   var comboID =escape(args.comboID.value); // decodeURIComponent
+   var find = '%3A';
+   var re = new RegExp(find);
+   var pickupTime = escape(args.pickupTime.value);
+   var comboID = escape(args.comboID.value);
+   pickupTime = pickupTime.replace(re, ':');
 
    let availableQuery = 'SELECT available FROM schedule WHERE pickup_time =\''
    +pickupTime+'\'';
@@ -25,33 +28,51 @@ exports.setOrder = function(args, res, next) {
          status: 500,
          message: err}));
      }
-     if(rows.available == 0){
+     if(rows[0].available == 0){
        return res.end(JSON.stringify({
          status: 406,
          message: "Order Not Accepted. Time is not available."
        }));
      }else {
+       // check for available locker
+       let getAvailableLockerQuery = 'SELECT nr FROM locker WHERE NOT nr IN \
+       (SELECT locker_nr FROM locker_schedule WHERE pickup_time= \''+pickupTime+'\')';
+       db.mysql_db.query(getAvailableLockerQuery, (err, rows) =>{
+         if(err){
+           return res.end(JSON.stringify({
+             status: 500,
+             message: err
+           }));
+         }
+         let insertOrderQuery = '';
 
-     var uuid = uuidv4();
-     let insertOrderQuery = 'UPDATE schedule SET available = 0 WHERE pickup_time = \
-     \''+pickupTime+'\';\
-     INSERT INTO orders(id, combo_id) \
-     VALUES(\''+uuid+'\','+comboID+'); \
-     INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
-     VALUES(\''+pickupTime+'\',1001,\''+uuid+'\');' //locker_nr has to be adjusted
+         if(rows.length == 1){
+           insertOrderQuery = 'UPDATE schedule SET available = 0 WHERE pickup_time = \
+           \''+pickupTime+'\';';
+         }
+         // insert Order function
+         var lockerNR = rows[0].nr;
+         var uuid = uuidv4();
+         insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id) \
+         VALUES(\''+uuid+'\','+comboID+'); \
+         INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
+         VALUES(\''+pickupTime+'\','+lockerNR+',\''+uuid+'\');'
 
-     db.mysql_db.query(insertOrderQuery, (err, rows, fields) => {
-       if (err) {
-         return res.end(JSON.stringify({
-           status: 500,
-           message: err}));
-       }
-       res.statusCode = 200;
-       res.end(JSON.stringify({
-         orders_id: uuid
-       }));
-     });
-    }
+          db.mysql_db.query(insertOrderQuery, (err, rows) => {
+             if (err) {
+               return res.end(JSON.stringify({
+                 status: 500,
+                 message: err}));
+             }
+               res.statusCode = 200;
+               res.end(JSON.stringify({
+                 pickup_time: pickupTime,
+                 locker_nr: lockerNR,
+                 orders_id: uuid
+               }));
+             });
+        });
+      }
    });
 }
 
