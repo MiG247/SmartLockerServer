@@ -5,6 +5,28 @@ const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
 
 
+exports.getOrderArray = function(args, res, next) {
+  /**
+   * Gets an array of 'orders' objects
+   * returns List
+   **/
+   let getOrderArrayQuery = 'select orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time \
+    from orders inner join combo on orders.combo_id = combo.id \
+    inner join locker_schedule on orders.id = locker_schedule.orders_id';
+
+   db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
+     if (err) {
+       res.end(JSON.stringify({
+         status: 500,
+         message: err
+       }));
+     }
+     res.setHeader('Content-Type', 'application/json');
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+
 exports.setOrder = function(args, res, next) {
   /**
    * Requests an order and gets a orderID back if successed
@@ -91,7 +113,7 @@ exports.getComboFood = function(args, res, next) {
 
    res.setHeader('Content-Type', 'application/json');
 
-   db.mysql_db.query(query, (err, rows, fields) => {
+   db.mysql_db.query(query, (err, rows) => {
      if (err) {
        return res.end(JSON.stringify({
          status: 500,
@@ -114,8 +136,8 @@ exports.getOrder = function(args, res, next) {
    AND nr = locker_nr';
 
    res.setHeader('Content-Type', 'application/json');
-   
-   db.mysql_db.query(query, (err, rows, fields) => {
+
+   db.mysql_db.query(query, (err, rows) => {
      if (err) {
        return res.end(JSON.stringify({
          status: 500,
@@ -139,7 +161,7 @@ SELECT food_id FROM food_combo WHERE combo_id ='+escape(args.combo_id.value)+'))
 
     res.setHeader('Content-Type', 'application/json');
 
-    db.mysql_db.query(query, (err, rows, fields) => {
+    db.mysql_db.query(query, (err, rows) => {
         if (err) {
             return res.end(JSON.stringify({
                 status: 500,
@@ -185,7 +207,7 @@ exports.getComboArray = function(args, res, next) {
 
    res.setHeader('Content-Type', 'application/json');
 
-   db.mysql_db.query(query, (err, rows, fields) => {
+   db.mysql_db.query(query, (err, rows) => {
      if (err) {
        return res.end(JSON.stringify({
          status: 500,
@@ -207,7 +229,7 @@ exports.getTimeSchedule = function(args, res, next) {
 
   res.setHeader('Content-Type', 'application/json');
 
-  db.mysql_db.query(query, (err, rows, fields) => {
+  db.mysql_db.query(query, (err, rows) => {
     if (err) {
       return res.end(JSON.stringify({
         status: 500,

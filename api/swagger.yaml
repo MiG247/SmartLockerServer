@@ -69,6 +69,25 @@ paths:
       x-swagger-router-controller: "Smartlocker"
 
   /order:
+    get:
+      tags:
+      - "Smartlocker"
+      description: "Gets an array of 'orders' objects"
+      operationId: "getOrderArray"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Order"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
     post:
       tags:
       - "Smartlocker"
@@ -182,11 +201,31 @@ definitions:
         type: "integer"
         format: "int32"
         example: 1002
-      pin:
+      PIN:
         type: "integer"
         format: "int32"
         example: 6832
-        
+
+  Order:
+    type: "object"
+    properties:
+      comboID:
+        type: "integer"
+        format: "int32"
+        example: 1
+      combo_name:
+        type: "string"
+        example: "combo 1"
+      locker_nr:
+        type: "integer"
+        format: "int32"
+        example: 1002
+      pickup_time:
+        type: "string"
+        format: "date-time"
+        example: "10:30"
+
+
   Locker_Schedule:
     type: "object"
     properties:
