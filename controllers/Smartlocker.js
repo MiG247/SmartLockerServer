@@ -32,3 +32,7 @@ module.exports.getComboFood = function getComboFood (req, res, next) {
 module.exports.getComboIngredient = function getComboIngredient (req, res, next) {
   Smartlocker.getComboIngredient(req.swagger.params, res, next);
 };
+
+module.exports.getOrderArray = function getOrderArray (req, res, next) {
+  Smartlocker.getOrderArray(req.swagger.params, res, next);
+};
