@@ -11,6 +11,7 @@ var mysql_db = mysql.createConnection({
   multipleStatements: true
 });
 */
+
 ///*
 var mysql_db = mysql.createConnection({
   host: 'dokku-mysql-smartlocker-db',
@@ -21,6 +22,7 @@ var mysql_db = mysql.createConnection({
   multipleStatements: true
 });
 //*/
+
 //connect to the DB
 mysql_db.connect((err) => {
       if(err){
