@@ -94,7 +94,7 @@ paths:
       description: "Requests an order and gets a orderID back if successed"
       operationId: "setOrder"
       parameters:
-      - $ref: "#/parameters/comboID"
+      - $ref: "#/parameters/combo_id"
       - $ref: "#/parameters/pickupTime"
       responses:
         200:
@@ -129,9 +129,9 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
-  /combo/food/{combo_id}:
+  /combo/food/{comboID}:
     parameters:
-    - $ref: "#/parameters/combo_id"
+    - $ref: "#/parameters/comboID"
     get:
       tags:
       - "Smartlocker"
@@ -151,13 +151,13 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
-  /combo/ingredient/{combo_id}:
+  /combo/ingredient/{comboID}:
      parameters:
-     - $ref: "#/parameters/combo_id"
+     - $ref: "#/parameters/comboID"
      get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from the food"
+      description: "Gets the basic informations from the food ingredients"
       operationId: "getComboIngredient"
       parameters: []
       responses:
@@ -171,6 +171,28 @@ paths:
           description: "Not Found"
         default:
           description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+
+  /close/combo/:
+      put:
+        tags:
+        - "Smartlocker"
+        description: "Sets a Combo to unavailable"
+        operationId: "updateCombo"
+        parameters:
+        - $ref: "#/parameters/combo_id"
+        - $ref: "#/parameters/combo_name"
+        - $ref: "#/parameters/combo_price"
+        responses:
+          200:
+            description: "OK"
+            schema:
+              items:
+                $ref: "#/definitions/Combo"
+          404:
+            description: "Not Found"
+          default:
+            description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
 ################################################################################
@@ -276,6 +298,9 @@ definitions:
       price:
         type: "number"
         format: "float"
+      combo_available:
+        type: "boolean"
+        example: "true = 1, false = 0"
 
   TimeSchedule:
     type: "object"
@@ -284,9 +309,9 @@ definitions:
         type: "string"
         format: "date-time"
         example: "10:30"
-      available:
+      schedule_available:
         type: "boolean"
-        example: "true"
+        example: "true = 1, false = 0"
 
   ErrorModel:
     type: "object"
@@ -304,16 +329,32 @@ definitions:
 ################################################################################
 
 parameters:
-  comboID:
-    name: "comboID"
+
+  combo_id:
+    name: "combo_id"
     in: "query"
     description: "The combo identifier number"
     required: true
     type: "integer"
     format: "int32"
 
-  combo_id:
-    name: "combo_id"
+  combo_name:
+    name: "combo_name"
+    in: "query"
+    description: "The combo name"
+    required: true
+    type: "string"
+
+  combo_price:
+    name: "combo_price"
+    in: "query"
+    description: "The combo price"
+    required: true
+    type: "number"
+    format: "float"
+
+  comboID:
+    name: "comboID"
     in: "path"
     description: "The combo identifier number"
     required: true
