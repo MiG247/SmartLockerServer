@@ -5,6 +5,41 @@ const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
 
 
+exports.updateCombo = function(args, res, next){
+  /*
+  * Updates a Combo availablity
+  * and returns the Updated Combo Object
+  */
+  var id = escape(args.combo_id.value);
+  var name = escape(args.combo_name.value);
+  var price = escape(args.combo_price.value);
+  let getCombo = 'SELECT id, name, price, combo_available FROM combo WHERE\
+                  id ='+id+' AND name = \''+name+'\' AND price = '+price;
+
+  db.mysql_db.query(getCombo, (err, rows) =>{
+    if(err){
+      return res.end(JSON.stringify({
+          status: 500,
+          massage: err
+      }));
+    }
+    let updateCombo = 'UPDATE combo SET combo_available = 0 WHERE id = '+id;
+
+    db.mysql_db.query(updateCombo, (err) =>{
+      if(err){
+        return res.end(JSON.stringify({
+          status: 500,
+          massage: err
+        }));
+      }
+        rows[0].combo_available = 0;
+        res.setHeader('Content-Type', 'application/json');
+        res.statusCode = 200;
+        res.end(JSON.stringify(rows));
+      });
+    });
+  }
+
 exports.getOrderArray = function(args, res, next) {
   /**
    * Gets an array of 'orders' objects
@@ -16,7 +51,7 @@ exports.getOrderArray = function(args, res, next) {
 
    db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
      if (err) {
-       res.end(JSON.stringify({
+      return res.end(JSON.stringify({
          status: 500,
          message: err
        }));
@@ -41,8 +76,8 @@ exports.setOrder = function(args, res, next) {
    var comboID = escape(args.comboID.value);
    pickupTime = pickupTime.replace(re, ':');
 
-   let availableQuery = 'SELECT available FROM schedule WHERE pickup_time =\''
-   +pickupTime+'\'';
+   let availableQuery = 'select schedule_available, combo_available from schedule, combo\
+    WHERE pickup_time = \''+pickupTime+'\' AND combo.id = '+comboID;
 
    db.mysql_db.query(availableQuery, (err, rows) =>{
      if(err){
@@ -50,10 +85,15 @@ exports.setOrder = function(args, res, next) {
          status: 500,
          message: err}));
      }
-     if(rows[0].available == 0){
+     if(rows[0].schedule_available == 0){
        return res.end(JSON.stringify({
          status: 406,
          message: "Order Not Accepted. Time is not available."
+       }));
+     }else if (rows[0].combo_available == 0){
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Order Not Accepted. Combo is not available."
        }));
      }else {
        // check for available locker
@@ -69,7 +109,7 @@ exports.setOrder = function(args, res, next) {
          let insertOrderQuery = '';
 
          if(rows.length == 1){
-           insertOrderQuery = 'UPDATE schedule SET available = 0 WHERE pickup_time = \
+           insertOrderQuery = 'UPDATE schedule SET schedule_available = 0 WHERE pickup_time = \
            \''+pickupTime+'\';';
          }
          // insert Order function
@@ -203,7 +243,7 @@ exports.getComboArray = function(args, res, next) {
    * offset Integer Start index of the source (optional)
    * returns List
    **/
-   let query = 'SELECT id, name, price FROM combo';
+   let query = 'SELECT id, name, price, combo_available FROM combo';
 
    res.setHeader('Content-Type', 'application/json');
 
