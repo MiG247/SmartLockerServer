@@ -43,7 +43,7 @@ exports.updatedOrder = function(args, res, next) {
           massage: err
         }));
       }
-      
+
       let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
       db.mysql_db.query(updateLocker, (err) =>{
         if(err){
@@ -205,7 +205,7 @@ exports.getComboFood = function(args, res, next) {
    * returns List
    **/
    let query = 'SELECT id, name FROM food WHERE id IN (SELECT food_id \
-     FROM food_combo WHERE combo_id ='+escape(args.combo_id.value)+')';
+     FROM food_combo WHERE combo_id ='+escape(args.comboID.value)+')';
 
    res.setHeader('Content-Type', 'application/json');
 
@@ -253,7 +253,7 @@ exports.getComboIngredient = function(args, res, next) {
      **/
     let query = 'SELECT name FROM ingredient WHERE id IN(\
 SELECT ingredient_id FROM food_ingredient WHERE food_id IN(\
-SELECT food_id FROM food_combo WHERE combo_id ='+escape(args.combo_id.value)+'))';
+SELECT food_id FROM food_combo WHERE combo_id ='+escape(args.comboID.value)+'))';
 
     res.setHeader('Content-Type', 'application/json');
 
