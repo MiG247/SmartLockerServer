@@ -43,6 +43,7 @@ exports.updatedOrder = function(args, res, next) {
           massage: err
         }));
       }
+      
       let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
       db.mysql_db.query(updateLocker, (err) =>{
         if(err){
