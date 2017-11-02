@@ -4,6 +4,62 @@ const fs = require('fs');
 const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
 
+exports.updatedOrder = function(args, res, next) {
+  /**
+   * Sets an order to served
+   *
+   * order_id String The order identifier string
+   * combo_id Integer The combo identifier number
+   * pickup_time String The time from schedule
+   * locker_nr Integer The locker identifier number
+   * no response value expected for this operation
+   **/
+   // seq is a PIN generator 
+  var seq = parseInt(Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+  var find = '%3A';
+  var re = new RegExp(find);
+  var combo_id = escape(args.combo_id.value);
+  var pickup_time = escape(args.pickup_time.value);
+  var locker_nr = escape(args.locker_nr.value);
+  pickup_time = pickup_time.replace(re, ':');
+
+  let getOrder = 'SELECT id FROM orders WHERE id = \
+    (SELECT orders_id FROM locker_schedule, orders \
+      WHERE pickup_time = \''+pickup_time+'\' AND locker_nr = '+locker_nr+'\
+      AND combo_id = '+combo_id+');'
+
+  db.mysql_db.query(getOrder, (err, rows) =>{
+    if(err){
+      return res.end(JSON.stringify({
+        status: 500,
+        massage: err
+      }));
+    }
+    let updateOrder = 'UPDATE orders SET served = 1 WHERE id = \''+rows[0].id+'\';';
+    db.mysql_db.query(updateOrder, (err) =>{
+      if(err){
+        return res.end(JSON.stringify({
+          status: 500,
+          massage: err
+        }));
+      }
+      console.log(seq);
+      let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
+      db.mysql_db.query(updateLocker, (err) =>{
+        if(err){
+          return res.end(JSON.stringify({
+            status: 500,
+            massage: err
+          }));
+        }
+        res.end(JSON.stringify({
+          status: 200,
+          message: "Order for "+pickup_time+" with combo "+combo_id+" into locker "+locker_nr+" has been served."
+        }));
+      });
+    });
+  });
+}
 
 exports.updateCombo = function(args, res, next){
   /*
@@ -45,7 +101,7 @@ exports.getOrderArray = function(args, res, next) {
    * Gets an array of 'orders' objects
    * returns List
    **/
-   let getOrderArrayQuery = 'select orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time \
+   let getOrderArrayQuery = 'select orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time, orders.served\
     from orders inner join combo on orders.combo_id = combo.id \
     inner join locker_schedule on orders.id = locker_schedule.orders_id';
 
@@ -171,7 +227,7 @@ exports.getOrder = function(args, res, next) {
    * orderID Integer The order identifier number
    * returns Order
    **/
-   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, locker_nr, pin FROM orders, locker_schedule, locker\
+   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, served, locker_nr, pin FROM orders, locker_schedule, locker\
    WHERE id = \''+escape(args.orderID.value)+'\' AND orders_id = \''+escape(args.orderID.value)+'\'\
    AND nr = locker_nr';
 

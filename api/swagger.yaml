@@ -95,7 +95,7 @@ paths:
       operationId: "setOrder"
       parameters:
       - $ref: "#/parameters/combo_id"
-      - $ref: "#/parameters/pickupTime"
+      - $ref: "#/parameters/pickup_time"
       responses:
         200:
           description: "OK"
@@ -195,6 +195,26 @@ paths:
             description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
+  /close/order/:
+      put:
+        tags:
+        - "Smartlocker"
+        description: "Sets an order to served"
+        operationId: "updatedOrder"
+        parameters:
+        - $ref: "#/parameters/combo_id"
+        - $ref: "#/parameters/pickup_time"
+        - $ref: "#/parameters/locker_nr"
+        responses:
+          200:
+            description: "OK"
+          404:
+            description: "Not Found"
+          default:
+            description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+
+
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
@@ -219,6 +239,9 @@ definitions:
         type: "string"
         format: "date-time"
         example: "10:30"
+      served:
+        type: "boolean"
+        example: "true = 1, false = 0"
       locker_nr:
         type: "integer"
         format: "int32"
@@ -246,7 +269,9 @@ definitions:
         type: "string"
         format: "date-time"
         example: "10:30"
-
+      served:
+        type: "boolean"
+        example: "true = 1, false = 0"
 
   Locker_Schedule:
     type: "object"
@@ -361,10 +386,25 @@ parameters:
     type: "integer"
     format: "int32"
 
-  pickupTime:
-    name: "pickupTime"
+  locker_nr:
+    name: "locker_nr"
+    in: "query"
+    description: "The locker identifier number"
+    required: true
+    type: "integer"
+    format: "int32"
+
+  pickup_time:
+    name: "pickup_time"
     in: "query"
     description: "The time from schedule"
+    required: true
+    type: "string"
+
+  order_id:
+    name: "order_id"
+    in: "query"
+    description: "The order identifier string"
     required: true
     type: "string"
 
