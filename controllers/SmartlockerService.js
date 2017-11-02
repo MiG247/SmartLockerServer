@@ -14,7 +14,7 @@ exports.updatedOrder = function(args, res, next) {
    * locker_nr Integer The locker identifier number
    * no response value expected for this operation
    **/
-   // seq is a PIN generator 
+   // seq is a PIN generator
   var seq = parseInt(Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
   var find = '%3A';
   var re = new RegExp(find);
@@ -43,7 +43,6 @@ exports.updatedOrder = function(args, res, next) {
           massage: err
         }));
       }
-      console.log(seq);
       let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
       db.mysql_db.query(updateLocker, (err) =>{
         if(err){
