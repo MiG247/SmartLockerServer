@@ -44,3 +44,7 @@ module.exports.updateCombo = function updateCombo (req, res, next) {
 module.exports.updatedOrder = function updatedOrder (req, res, next) {
   Smartlocker.updatedOrder(req.swagger.params, res, next);
 };
+
+module.exports.getLockerArray = function getLockerArray (req, res, next) {
+  Smartlocker.getLockerArray(req.swagger.params, res, next);
+};
