@@ -214,12 +214,44 @@ paths:
             description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
 
+  /locker:
+      get:
+        tags:
+        - "Smartlocker"
+        description: "Gets an array of 'orders' objects"
+        operationId: "getLockerArray"
+        responses:
+          200:
+            description: "OK"
+            schema:
+              type: "array"
+              items:
+                $ref: "#/definitions/Locker"
+          500:
+            description: "Error on Database"
+            schema:
+             $ref: "#/definitions/ErrorModel"
+          default:
+            description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
 
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
 
 definitions:
+
+  Locker:
+    type: "object"
+    properties:
+      nr:
+        type: "integer"
+        format: "int32"
+        example: 1002
+      PIN:
+        type: "integer"
+        format: "int32"
+        example: 6832
 
   UserOrder:
     type: "object"

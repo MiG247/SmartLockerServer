@@ -4,6 +4,28 @@ const fs = require('fs');
 const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
 
+
+exports.getLockerArray = function(args, res, next) {
+  /**
+   * Gets an array of 'orders' objects
+   *
+   * returns List
+   **/
+   let getOrderArrayQuery = 'SELECT * FROM locker;';
+
+   db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
+     if (err) {
+      return res.end(JSON.stringify({
+         status: 500,
+         message: err
+       }));
+     }
+     res.setHeader('Content-Type', 'application/json');
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+
 exports.updatedOrder = function(args, res, next) {
   /**
    * Sets an order to served
