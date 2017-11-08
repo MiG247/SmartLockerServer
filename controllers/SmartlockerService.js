@@ -150,8 +150,8 @@ exports.setOrder = function(args, res, next) {
    **/
    var find = '%3A';
    var re = new RegExp(find);
-   var pickupTime = escape(args.pickupTime.value);
-   var comboID = escape(args.comboID.value);
+   var pickupTime = escape(args.pickup_time.value);
+   var comboID = escape(args.combo_id.value);
    pickupTime = pickupTime.replace(re, ':');
 
    let availableQuery = 'select schedule_available, combo_available from schedule, combo\
@@ -163,7 +163,12 @@ exports.setOrder = function(args, res, next) {
          status: 500,
          message: err}));
      }
-     if(rows[0].schedule_available == 0){
+     if(rows[0] === undefined){
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Order Not Accepted. Invalied Data."
+       }))
+     }else if(rows[0].schedule_available == 0){
        return res.end(JSON.stringify({
          status: 406,
          message: "Order Not Accepted. Time is not available."
@@ -193,8 +198,8 @@ exports.setOrder = function(args, res, next) {
          // insert Order function
          var lockerNR = rows[0].nr;
          var uuid = uuidv4();
-         insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id) \
-         VALUES(\''+uuid+'\','+comboID+'); \
+         insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id, served) \
+         VALUES(\''+uuid+'\','+comboID+', 0); \
          INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
          VALUES(\''+pickupTime+'\','+lockerNR+',\''+uuid+'\');'
 
