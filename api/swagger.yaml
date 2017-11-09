@@ -27,7 +27,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'combo' objects."
+      description: "Gets an array of 'combo' objects. For Clerk and Client."
       operationId: "getComboArray"
       parameters:
       - $ref: "#/parameters/size"
@@ -51,7 +51,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'timeschedule' objects."
+      description: "Gets an array of 'timeschedule' objects. For Clerk and Client"
       operationId: "getTimeSchedule"
       responses:
         200:
@@ -72,7 +72,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'orders' objects"
+      description: "Gets an array of 'orders' objects. Only for Clerk"
       operationId: "getOrderArray"
       responses:
         200:
@@ -91,7 +91,7 @@ paths:
     post:
       tags:
       - "Smartlocker"
-      description: "Requests an order and gets a orderID back if successed"
+      description: "Requests an order and gets a orderID back if successed. Only for Client"
       operationId: "setOrder"
       parameters:
       - $ref: "#/parameters/combo_id"
@@ -115,7 +115,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from an order"
+      description: "Gets the basic informations from an order. Only for Client."
       operationId: "getOrder"
       parameters: []
       responses:
@@ -135,7 +135,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from a combo the food"
+      description: "Gets the basic informations from a combo the food. For Clerk and Client."
       operationId: "getComboFood"
       parameters: []
       responses:
@@ -157,7 +157,7 @@ paths:
      get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from the food ingredients"
+      description: "Gets the basic informations from the food ingredients. For Clerk and Client"
       operationId: "getComboIngredient"
       parameters: []
       responses:
@@ -177,12 +177,13 @@ paths:
       put:
         tags:
         - "Smartlocker"
-        description: "Sets a Combo to unavailable"
+        description: "Sets the Status of a Combo. For Clerk."
         operationId: "updateCombo"
         parameters:
         - $ref: "#/parameters/combo_id"
         - $ref: "#/parameters/combo_name"
         - $ref: "#/parameters/combo_price"
+        - $ref: "#/parameters/combo_available"
         responses:
           200:
             description: "OK"
@@ -199,7 +200,7 @@ paths:
       put:
         tags:
         - "Smartlocker"
-        description: "Sets an order to served"
+        description: "Sets an order to served. For Clerk"
         operationId: "updatedOrder"
         parameters:
         - $ref: "#/parameters/combo_id"
@@ -218,7 +219,7 @@ paths:
       get:
         tags:
         - "Smartlocker"
-        description: "Gets an array of 'orders' objects"
+        description: "Gets an array of 'orders' objects. For LockerApp."
         operationId: "getLockerArray"
         responses:
           200:
@@ -386,6 +387,14 @@ definitions:
 ################################################################################
 
 parameters:
+
+  combo_available:
+    name: "combo_available"
+    in: "query"
+    description: "Combo Status: is available?"
+    required: true
+    type: "integer"
+    format: "int32"
 
   combo_id:
     name: "combo_id"

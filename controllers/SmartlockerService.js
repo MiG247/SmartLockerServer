@@ -91,6 +91,7 @@ exports.updateCombo = function(args, res, next){
   var id = escape(args.combo_id.value);
   var name = escape(args.combo_name.value);
   var price = escape(args.combo_price.value);
+  var available = escape(args.combo_available.value);
   let getCombo = 'SELECT id, name, price, combo_available FROM combo WHERE\
                   id ='+id+' AND name = \''+name+'\' AND price = '+price;
 
@@ -101,7 +102,7 @@ exports.updateCombo = function(args, res, next){
           massage: err
       }));
     }
-    let updateCombo = 'UPDATE combo SET combo_available = 0 WHERE id = '+id;
+    let updateCombo = 'UPDATE combo SET combo_available = '+available+' WHERE id = '+id;
 
     db.mysql_db.query(updateCombo, (err) =>{
       if(err){
@@ -110,7 +111,7 @@ exports.updateCombo = function(args, res, next){
           massage: err
         }));
       }
-        rows[0].combo_available = 0;
+        rows[0].combo_available = available;
         res.setHeader('Content-Type', 'application/json');
         res.statusCode = 200;
         res.end(JSON.stringify(rows));
