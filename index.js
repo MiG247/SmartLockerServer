@@ -1,14 +1,4 @@
 'use strict';
-/*
-var fs = require('fs'),
-    path = require('path'),
-    http = require('http');
-
-var app = require('connect')();
-var swaggerTools = require('swagger-tools');
-var jsyaml = require('js-yaml');
-var serverPort = 8080;
-*/
 
 var app = require('connect')();
 var http = require('http');
