@@ -355,8 +355,8 @@ exports.getComboArray = function(args, res, next) {
      }
      if(rows[0] === undefined){
        return res.end(JSON.stringify({
-         status: 406,
-         message: "Order Not Accepted. Invalied Data."
+         status: 404,
+         message: "No Combos. Invalied Data."
        }))
      }else {
 
