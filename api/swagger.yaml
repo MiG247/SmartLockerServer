@@ -27,7 +27,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'combo' objects."
+      description: "Gets an array of 'combo' objects. For Clerk and Client."
       operationId: "getComboArray"
       parameters:
       - $ref: "#/parameters/size"
@@ -51,7 +51,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'timeschedule' objects."
+      description: "Gets an array of 'timeschedule' objects. For Clerk and Client"
       operationId: "getTimeSchedule"
       responses:
         200:
@@ -72,7 +72,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'orders' objects"
+      description: "Gets an array of 'orders' objects. Only for Clerk"
       operationId: "getOrderArray"
       responses:
         200:
@@ -91,11 +91,18 @@ paths:
     post:
       tags:
       - "Smartlocker"
-      description: "Requests an order and gets a orderID back if successed"
+      description: "Requests an order and gets a orderID back if successed. Only for Client"
       operationId: "setOrder"
+      consumes:
+        - application/json
       parameters:
-      - $ref: "#/parameters/combo_id"
-      - $ref: "#/parameters/pickup_time"
+        - in: "body"
+          name: "set_order"
+          description: "set order object"
+          required: true
+          schema:
+            $ref: "#/definitions/Set_Order"
+
       responses:
         200:
           description: "OK"
@@ -115,7 +122,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from an order"
+      description: "Gets the basic informations from an order. Only for Client."
       operationId: "getOrder"
       parameters: []
       responses:
@@ -135,7 +142,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from a combo the food"
+      description: "Gets the basic informations from a combo the food. For Clerk and Client."
       operationId: "getComboFood"
       parameters: []
       responses:
@@ -157,7 +164,7 @@ paths:
      get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from the food ingredients"
+      description: "Gets the basic informations from the food ingredients. For Clerk and Client"
       operationId: "getComboIngredient"
       parameters: []
       responses:
@@ -177,12 +184,17 @@ paths:
       put:
         tags:
         - "Smartlocker"
-        description: "Sets a Combo to unavailable"
+        description: "Sets the Status of a Combo. For Clerk."
         operationId: "updateCombo"
+        consumes:
+        - application/json
         parameters:
-        - $ref: "#/parameters/combo_id"
-        - $ref: "#/parameters/combo_name"
-        - $ref: "#/parameters/combo_price"
+          - in: "body"
+            name: "combo"
+            description: "combo object"
+            required: true
+            schema:
+              $ref: "#/definitions/Combo"
         responses:
           200:
             description: "OK"
@@ -199,12 +211,17 @@ paths:
       put:
         tags:
         - "Smartlocker"
-        description: "Sets an order to served"
-        operationId: "updatedOrder"
+        description: "Sets an order to served. For Clerk"
+        operationId: "updateOrder"
+        consumes:
+        - application/json
         parameters:
-        - $ref: "#/parameters/combo_id"
-        - $ref: "#/parameters/pickup_time"
-        - $ref: "#/parameters/locker_nr"
+          - in: "body"
+            name: "close_order"
+            description: "close order object"
+            required: true
+            schema:
+              $ref: "#/definitions/Close_Order"
         responses:
           200:
             description: "OK"
@@ -218,7 +235,7 @@ paths:
       get:
         tags:
         - "Smartlocker"
-        description: "Gets an array of 'orders' objects"
+        description: "Gets an array of 'orders' objects. For LockerApp."
         operationId: "getLockerArray"
         responses:
           200:
@@ -240,6 +257,31 @@ paths:
 ################################################################################
 
 definitions:
+  Set_Order:
+    type: "object"
+    properties:
+      combo_id:
+        type: "integer"
+        format: "int32"
+        example: 3
+      pickup_time:
+        type: "string"
+        example: "10:30"
+
+  Close_Order:
+    type: "object"
+    properties:
+      combo_id:
+        type: "integer"
+        format: "int32"
+        example: 3
+      pickup_time:
+        type: "string"
+        example: "10:30"
+      locker_nr:
+        type: "integer"
+        format: "int32"
+        example: 1002
 
   Locker:
     type: "object"
@@ -345,19 +387,22 @@ definitions:
   Combo:
     type: "object"
     properties:
-      id:
+      combo_id:
         type: "integer"
         format: "int32"
         example: 3
-      name:
+      combo_name:
         type: "string"
         example: "combo 1"
-      price:
+      combo_price:
         type: "number"
         format: "float"
       combo_available:
-        type: "boolean"
-        example: "true = 1, false = 0"
+        type: "integer"
+        format: "int32"
+      photo:
+        type: "string"
+        format: "byte"
 
   TimeSchedule:
     type: "object"
@@ -387,29 +432,6 @@ definitions:
 
 parameters:
 
-  combo_id:
-    name: "combo_id"
-    in: "query"
-    description: "The combo identifier number"
-    required: true
-    type: "integer"
-    format: "int32"
-
-  combo_name:
-    name: "combo_name"
-    in: "query"
-    description: "The combo name"
-    required: true
-    type: "string"
-
-  combo_price:
-    name: "combo_price"
-    in: "query"
-    description: "The combo price"
-    required: true
-    type: "number"
-    format: "float"
-
   comboID:
     name: "comboID"
     in: "path"
@@ -417,28 +439,6 @@ parameters:
     required: true
     type: "integer"
     format: "int32"
-
-  locker_nr:
-    name: "locker_nr"
-    in: "query"
-    description: "The locker identifier number"
-    required: true
-    type: "integer"
-    format: "int32"
-
-  pickup_time:
-    name: "pickup_time"
-    in: "query"
-    description: "The time from schedule"
-    required: true
-    type: "string"
-
-  order_id:
-    name: "order_id"
-    in: "query"
-    description: "The order identifier string"
-    required: true
-    type: "string"
 
   orderID:
     name: "orderID"

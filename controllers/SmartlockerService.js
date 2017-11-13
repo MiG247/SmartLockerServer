@@ -26,7 +26,7 @@ exports.getLockerArray = function(args, res, next) {
    });
 }
 
-exports.updatedOrder = function(args, res, next) {
+exports.updateOrder = function(args, res, next) {
   /**
    * Sets an order to served
    *
@@ -40,13 +40,13 @@ exports.updatedOrder = function(args, res, next) {
   var seq = parseInt(Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
   var find = '%3A';
   var re = new RegExp(find);
-  var combo_id = escape(args.combo_id.value);
-  var pickup_time = escape(args.pickup_time.value);
-  var locker_nr = escape(args.locker_nr.value);
+  var combo_id = escape(args.close_order.value.combo_id);
+  var pickup_time = escape(args.close_order.value.pickup_time);
+  var locker_nr = escape(args.close_order.value.locker_nr);
   pickup_time = pickup_time.replace(re, ':');
 
   let getOrder = 'SELECT id FROM orders WHERE id = \
-    (SELECT orders_id FROM locker_schedule, orders \
+    (SELECT DISTINCT orders_id FROM locker_schedule, orders \
       WHERE pickup_time = \''+pickup_time+'\' AND locker_nr = '+locker_nr+'\
       AND combo_id = '+combo_id+');'
 
@@ -57,6 +57,14 @@ exports.updatedOrder = function(args, res, next) {
         massage: err
       }));
     }
+
+    if(rows[0] === undefined){
+      return res.end(JSON.stringify({
+        status: 406,
+        message: "Order Not Accepted. Invalied Data."
+      }))
+    }
+
     let updateOrder = 'UPDATE orders SET served = 1 WHERE id = \''+rows[0].id+'\';';
     db.mysql_db.query(updateOrder, (err) =>{
       if(err){
@@ -88,9 +96,10 @@ exports.updateCombo = function(args, res, next){
   * Updates a Combo availablity
   * and returns the Updated Combo Object
   */
-  var id = escape(args.combo_id.value);
-  var name = escape(args.combo_name.value);
-  var price = escape(args.combo_price.value);
+  var id = escape(args.combo.value.combo_id);
+  var name = escape(args.combo.value.combo_name);
+  var price = escape(args.combo.value.combo_price);
+  var available = escape(args.combo.value.combo_available);
   let getCombo = 'SELECT id, name, price, combo_available FROM combo WHERE\
                   id ='+id+' AND name = \''+name+'\' AND price = '+price;
 
@@ -101,7 +110,15 @@ exports.updateCombo = function(args, res, next){
           massage: err
       }));
     }
-    let updateCombo = 'UPDATE combo SET combo_available = 0 WHERE id = '+id;
+
+    if(rows[0] === undefined){
+      return res.end(JSON.stringify({
+        status: 406,
+        message: "Combo Not Accepted. Invalied Data."
+      }))
+    }
+
+    let updateCombo = 'UPDATE combo SET combo_available = '+available+' WHERE id = '+id;
 
     db.mysql_db.query(updateCombo, (err) =>{
       if(err){
@@ -110,7 +127,7 @@ exports.updateCombo = function(args, res, next){
           massage: err
         }));
       }
-        rows[0].combo_available = 0;
+        rows[0].combo_available = available;
         res.setHeader('Content-Type', 'application/json');
         res.statusCode = 200;
         res.end(JSON.stringify(rows));
@@ -150,8 +167,8 @@ exports.setOrder = function(args, res, next) {
    **/
    var find = '%3A';
    var re = new RegExp(find);
-   var pickupTime = escape(args.pickupTime.value);
-   var comboID = escape(args.comboID.value);
+   var pickupTime = escape(args.set_order.value.pickup_time);
+   var comboID = escape(args.set_order.value.combo_id);
    pickupTime = pickupTime.replace(re, ':');
 
    let availableQuery = 'select schedule_available, combo_available from schedule, combo\
@@ -163,7 +180,12 @@ exports.setOrder = function(args, res, next) {
          status: 500,
          message: err}));
      }
-     if(rows[0].schedule_available == 0){
+     if(rows[0] === undefined){
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Order Not Accepted. Invalied Data."
+       }))
+     }else if(rows[0].schedule_available == 0){
        return res.end(JSON.stringify({
          status: 406,
          message: "Order Not Accepted. Time is not available."
@@ -193,8 +215,8 @@ exports.setOrder = function(args, res, next) {
          // insert Order function
          var lockerNR = rows[0].nr;
          var uuid = uuidv4();
-         insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id) \
-         VALUES(\''+uuid+'\','+comboID+'); \
+         insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id, served) \
+         VALUES(\''+uuid+'\','+comboID+', 0); \
          INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
          VALUES(\''+pickupTime+'\','+lockerNR+',\''+uuid+'\');'
 
@@ -321,7 +343,7 @@ exports.getComboArray = function(args, res, next) {
    * offset Integer Start index of the source (optional)
    * returns List
    **/
-   let query = 'SELECT id, name, price, combo_available FROM combo';
+   let query = 'SELECT id, name, price, combo_available, photo FROM combo';
 
    res.setHeader('Content-Type', 'application/json');
 
@@ -331,8 +353,20 @@ exports.getComboArray = function(args, res, next) {
          status: 500,
          message: err}));
      }
-     res.statusCode = 200;
-     res.end(JSON.stringify(rows));
+     if(rows[0] === undefined){
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Order Not Accepted. Invalied Data."
+       }))
+     }else {
+
+       for (var i = 0; i < rows.length; i++) {
+         rows[i].photo = new Buffer(rows[i].photo).toString('base64');
+       }
+       res.statusCode = 200;
+       res.end(JSON.stringify(rows));
+     }
+
    });
 }
 
