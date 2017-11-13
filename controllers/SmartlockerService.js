@@ -343,7 +343,7 @@ exports.getComboArray = function(args, res, next) {
    * offset Integer Start index of the source (optional)
    * returns List
    **/
-   let query = 'SELECT id, name, price, combo_available FROM combo';
+   let query = 'SELECT id, name, price, combo_available, photo FROM combo';
 
    res.setHeader('Content-Type', 'application/json');
 
@@ -353,8 +353,20 @@ exports.getComboArray = function(args, res, next) {
          status: 500,
          message: err}));
      }
-     res.statusCode = 200;
-     res.end(JSON.stringify(rows));
+     if(rows[0] === undefined){
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Order Not Accepted. Invalied Data."
+       }))
+     }else {
+
+       for (var i = 0; i < rows.length; i++) {
+         rows[i].photo = new Buffer(rows[i].photo).toString('base64');
+       }
+       res.statusCode = 200;
+       res.end(JSON.stringify(rows));
+     }
+
    });
 }
 

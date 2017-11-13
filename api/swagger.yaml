@@ -400,6 +400,9 @@ definitions:
       combo_available:
         type: "integer"
         format: "int32"
+      photo:
+        type: "string"
+        format: "byte"
 
   TimeSchedule:
     type: "object"

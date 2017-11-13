@@ -48,3 +48,7 @@ module.exports.updateOrder = function updateOrder (req, res, next) {
 module.exports.getLockerArray = function getLockerArray (req, res, next) {
   Smartlocker.getLockerArray(req.swagger.params, res, next);
 };
+
+module.exports.getLockerArray = function getLockerArray (req, res, next) {
+  Smartlocker.getLockerArray(req.swagger.params, res, next);
+};
