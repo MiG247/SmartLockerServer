@@ -111,6 +111,8 @@ paths:
             $ref: "#/definitions/Locker_Schedule"
         404:
           description: "Not Found"
+        403:
+          description: "Could not produce a Token"
         406:
           description: "Order Not Accepted"
         default:
@@ -131,6 +133,12 @@ paths:
           description: "OK"
           schema:
             $ref: "#/definitions/UserOrder"
+        403:
+            description: "No permission to view this data, Clerk or User token needed"
+        500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
         404:
           description: "Not Found"
         default:
@@ -454,6 +462,10 @@ definitions:
       orders_id:
         type: "string"
         example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
+      name:
+        type: "string"
+      token:
+        type: "string"
 
   Ingredient:
     type: "object"

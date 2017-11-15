@@ -6,6 +6,12 @@ const crypt = require('crypto');
 const fs = require('fs');
 const url = require('url');
 
+exports.decodeName = function (req) {
+  var urlParts = url.parse(req.url, true);
+  var query = urlParts.query;
+  return jwt.decode(req.headers['token'] || query.token);
+}
+
 exports.auth = function (req, res, userName, cb) {
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
