@@ -3,6 +3,8 @@
 const fs = require('fs');
 const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
+const security  = require('../security/Functions');
+const jwt = require('../jwt');
 
 exports.verifyPIN = function(args, res, next) {
   /**
@@ -232,7 +234,7 @@ exports.setOrder = function(args, res, next) {
          status: 406,
          message: "Order Not Accepted. Combo is not available."
        }));
-     }else {
+     }else{
        // check for available locker
        let getAvailableLockerQuery = 'SELECT nr FROM locker WHERE NOT nr IN \
        (SELECT locker_nr FROM locker_schedule WHERE pickup_time= \''+pickupTime+'\')';
@@ -257,21 +259,36 @@ exports.setOrder = function(args, res, next) {
          INSERT INTO locker_schedule(pickup_time, locker_nr, orders_id) \
          VALUES(\''+pickupTime+'\','+lockerNR+',\''+uuid+'\');'
 
-        res.setHeader('Content-Type', 'application/json');
+         res.setHeader('Content-Type', 'application/json');
 
-          db.mysql_db.query(insertOrderQuery, (err, rows) => {
-             if (err) {
+         db.mysql_db.query(insertOrderQuery, (err, rows) => {
+           if (err) {
                return res.end(JSON.stringify({
                  status: 500,
                  message: err}));
-             }
+           }
+           const payload = {
+             exp: Math.floor(Date.now() / 1000) + (60*60*24), //expires in 24h
+             userName: uuid,
+             admin: 0
+           };
+           jwt.sign(payload, (err, token) =>{
+               if (err) {
+                 return res.end(JSON.stringify({
+                   status: 403,
+                   message: err
+                 }));
+               }
                res.statusCode = 200;
                res.end(JSON.stringify({
                  pickup_time: pickupTime,
                  locker_nr: lockerNR,
-                 orders_id: uuid
+                 orders_id: uuid,
+                 name: "User",
+                 token: token
                }));
              });
+          });
         });
       }
    });

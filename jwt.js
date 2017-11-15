@@ -10,3 +10,7 @@ module.exports.verify = function (token, cb) {
 module.exports.sign = function (payload, cb) {
   jwt.sign(payload, secret, cb);
 };
+
+module.exports.decode = function (token) {
+  return jwt.decode(token);
+};

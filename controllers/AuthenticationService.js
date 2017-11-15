@@ -2,7 +2,6 @@
 
 const db = require('../MySQL');
 const jwt = require('../jwt');
-const crypt = require('crypto');
 const fs = require('fs');
 const security  = require('../security/Functions');
 

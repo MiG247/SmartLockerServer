@@ -24,7 +24,17 @@ module.exports.getTimeSchedule = function getTimeSchedule (req, res, next) {
 };
 
 module.exports.getOrder = function getOrder (req, res, next) {
-  Smartlocker.getOrder(req.swagger.params, res, next);
+  var userName = security.decodeName(req).userName; //userName stored in token
+  if (userName === "Clerk" ) {
+    security.auth(req, res, "Clerk", () =>{
+      Smartlocker.getOrder(req.swagger.params, res, next);
+    });
+  }else {
+    security.auth(req, res, req.swagger.params.orderID.value, () =>{
+      Smartlocker.getOrder(req.swagger.params, res, next);
+    });
+  }
+
 };
 
 module.exports.setOrder = function setOrder (req, res, next) {
