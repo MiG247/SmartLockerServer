@@ -32,7 +32,7 @@ exports.getToken = function(args, res, next){
   let getUser = 'SELECT name, password, admin FROM staff WHERE name = \''+username+'\
                   \' AND password = \''+password+'\'';
 
-  //res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Type', 'application/json');
 
   db.mysql_db.query(getUser, (err, rows) => {
     if (err) {
@@ -47,7 +47,7 @@ exports.getToken = function(args, res, next){
       }));
     }
     const payload = {
-      exp: 144000,
+      exp: Math.floor(Date.now() / 1000) + (60*60*24), //expires in 24h
       userName: username,
       admin: rows[0].admin
     };

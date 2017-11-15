@@ -4,7 +4,33 @@ const db = require('../MySQL');
 const jwt = require('../jwt');
 const crypt = require('crypto');
 const fs = require('fs');
+const url = require('url');
 
+exports.auth = function (req, res, userName, cb) {
+  var urlParts = url.parse(req.url, true);
+  var query = urlParts.query;
+  jwt.verify(req.headers['token'] || query.token, (err, token) => {
+    if (err) {
+      return res.end(JSON.stringify({
+        status: 403,
+        massage: err
+      }));
+    }
+    if (!token.userName) {
+      return res.end(JSON.stringify({
+        status: 403,
+        massage: "No UserName in Token!"
+      }));
+    }
+    if (token.userName !== userName) {
+      return res.end(JSON.stringify({
+        status: 403,
+        massage: "User: "+token.userName+" is not authorized!"
+      }));
+    }
+    cb(token);
+  });
+}
 
 exports.getSalt = function(user){
   /*

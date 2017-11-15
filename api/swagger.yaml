@@ -81,6 +81,8 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Order"
+        403:
+          description: "No permission to view this data, Clerk token needed"
         500:
           description: "Error on Database"
           schema:
@@ -200,6 +202,12 @@ paths:
             schema:
               items:
                 $ref: "#/definitions/Combo"
+          403:
+            description: "No permission to view this data, Clerk token needed"
+          500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
           404:
             description: "Not Found"
           default:
@@ -224,6 +232,12 @@ paths:
         responses:
           200:
             description: "OK"
+          403:
+            description: "No permission to view this data, Clerk token needed"
+          500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
           404:
             description: "Not Found"
           default:
@@ -270,12 +284,18 @@ paths:
             schema:
               items:
                 $ref: "#/definitions/Locker"
+          403:
+            description: "No permission to view this data, LockerApp token needed"
           406:
             description: "Not Allowed"
           404:
             description: "Not Found"
             schema:
              $ref: "#/definitions/ErrorModel"
+          500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
           default:
             description: "unexpected error"
         x-swagger-router-controller: "Smartlocker"
