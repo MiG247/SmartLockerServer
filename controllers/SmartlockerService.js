@@ -4,6 +4,43 @@ const fs = require('fs');
 const db = require('../MySQL');
 const uuidv4 = require('uuid/v4');
 
+exports.verifyPIN = function(args, res, next) {
+  /**
+   * verifies the PIN of a Locker. For LockerApp
+   *
+   * locker Locker Locker PIN
+   * no response value expected for this operation
+   **/
+   var lockerNr = escape(args.locker.value.nr);
+   var lockerPIN = escape(args.locker.value.PIN);
+
+   let getLocker = 'SELECT * FROM locker WHERE nr = '+lockerNr;
+
+   db.mysql_db.query(getLocker, (err, rows)=> {
+     if(err){
+       return res.end(JSON.stringify({
+         status: 500,
+         message: err
+       }));
+     }
+     if(rows[0] === undefined){
+       return res.end(JSON.stringify({
+         status: 404,
+         message: "Locker Number not found"
+       }));
+     }
+     if (rows[0].PIN != lockerPIN) {
+       return res.end(JSON.stringify({
+         status: 406,
+         message: "Invalied PIN!"
+       }));
+     }
+     res.setHeader('Content-Type', 'application/json');
+     res.statusCode = 200;
+     res.end(JSON.stringify(rows));
+   });
+}
+
 
 exports.getLockerArray = function(args, res, next) {
   /**
@@ -11,11 +48,11 @@ exports.getLockerArray = function(args, res, next) {
    *
    * returns List
    **/
-   let getOrderArrayQuery = 'SELECT * FROM locker;';
+   let getOrderArrayQuery = 'SELECT nr FROM locker;';
 
    db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
      if (err) {
-      return res.end(JSON.stringify({
+       return res.end(JSON.stringify({
          status: 500,
          message: err
        }));
@@ -184,7 +221,7 @@ exports.setOrder = function(args, res, next) {
        return res.end(JSON.stringify({
          status: 406,
          message: "Order Not Accepted. Invalied Data."
-       }))
+       }));
      }else if(rows[0].schedule_available == 0){
        return res.end(JSON.stringify({
          status: 406,

@@ -81,6 +81,8 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/Order"
+        403:
+          description: "No permission to view this data, Clerk token needed"
         500:
           description: "Error on Database"
           schema:
@@ -102,7 +104,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/Set_Order"
-
       responses:
         200:
           description: "OK"
@@ -201,6 +202,12 @@ paths:
             schema:
               items:
                 $ref: "#/definitions/Combo"
+          403:
+            description: "No permission to view this data, Clerk token needed"
+          500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
           404:
             description: "Not Found"
           default:
@@ -225,6 +232,12 @@ paths:
         responses:
           200:
             description: "OK"
+          403:
+            description: "No permission to view this data, Clerk token needed"
+          500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
           404:
             description: "Not Found"
           default:
@@ -250,13 +263,93 @@ paths:
              $ref: "#/definitions/ErrorModel"
           default:
             description: "unexpected error"
-      x-swagger-router-controller: "Smartlocker"
+        x-swagger-router-controller: "Smartlocker"
+      post:
+        tags:
+        - "Smartlocker"
+        description: "verifies the PIN of a Locker. For LockerApp"
+        operationId: "verifyPIN"
+        consumes:
+          - application/json
+        parameters:
+          - in: "body"
+            name: "locker"
+            description: "Locker PIN"
+            required: true
+            schema:
+              $ref: "#/definitions/Locker"
+        responses:
+          200:
+            description: "OK"
+            schema:
+              items:
+                $ref: "#/definitions/Locker"
+          403:
+            description: "No permission to view this data, LockerApp token needed"
+          406:
+            description: "Not Allowed"
+          404:
+            description: "Not Found"
+            schema:
+             $ref: "#/definitions/ErrorModel"
+          500:
+            description: "Error on Database"
+            schema:
+              $ref: "#/definitions/ErrorModel"
+          default:
+            description: "unexpected error"
+        x-swagger-router-controller: "Smartlocker"
+
+  /auth:
+    post:
+      tags:
+      - "Authentication"
+      description: "Login to the Server and get a JSON WEB Token back."
+      operationId: "getToken"
+      consumes:
+       - application/json
+      parameters:
+        - in: "body"
+          name: "login"
+          description: "Login informations"
+          required: true
+          schema:
+            $ref: "#/definitions/Staff"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            items:
+              $ref: "#/definitions/Token"
+        406:
+          description: "Not Allowed"
+        default:
+          description: "unexpected error"
+    x-swagger-router-controller: "Authentication"
+
 
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
 
 definitions:
+
+  Staff:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      password:
+        type: "string"
+
+  Token:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      token:
+        type: "string"
+
   Set_Order:
     type: "object"
     properties:

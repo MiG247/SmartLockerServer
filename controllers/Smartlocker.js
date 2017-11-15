@@ -1,9 +1,15 @@
 'use strict';
 
-var url = require('url');
+const url = require('url');
+const jwt = require('../jwt');
+const Smartlocker = require('./SmartlockerService');
+const security  = require('../security/Functions');
 
-var Smartlocker = require('./SmartlockerService');
-
+module.exports.verifyPIN = function verifyPIN (req, res, next) {
+  security.auth(req, res, "Locker", () =>{
+    Smartlocker.verifyPIN(req.swagger.params, res, next);
+  });
+};
 
 module.exports.getHtml = function getHtml (req, res, next) {
   Smartlocker.getHtml(req.swagger.params, res, next);
@@ -34,15 +40,21 @@ module.exports.getComboIngredient = function getComboIngredient (req, res, next)
 };
 
 module.exports.getOrderArray = function getOrderArray (req, res, next) {
-  Smartlocker.getOrderArray(req.swagger.params, res, next);
+  security.auth(req, res, "Clerk", () =>{
+    Smartlocker.getOrderArray(req.swagger.params, res, next);
+  });
 };
 
 module.exports.updateCombo = function updateCombo (req, res, next) {
-  Smartlocker.updateCombo(req.swagger.params, res, next);
+  security.auth(req, res, "Clerk", () =>{
+    Smartlocker.updateCombo(req.swagger.params, res, next);
+  });
 };
 
 module.exports.updateOrder = function updateOrder (req, res, next) {
-  Smartlocker.updateOrder(req.swagger.params, res, next);
+  security.auth(req, res, "Clerk", () =>{
+    Smartlocker.updateOrder(req.swagger.params, res, next);
+  });
 };
 
 module.exports.getLockerArray = function getLockerArray (req, res, next) {
