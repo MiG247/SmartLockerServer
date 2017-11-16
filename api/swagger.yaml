@@ -429,6 +429,8 @@ definitions:
   Order:
     type: "object"
     properties:
+      id:
+        type: "string"
       comboID:
         type: "integer"
         format: "int32"
