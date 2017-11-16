@@ -179,7 +179,7 @@ exports.getOrderArray = function(args, res, next) {
    * Gets an array of 'orders' objects
    * returns List
    **/
-   let getOrderArrayQuery = 'select orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time, orders.served\
+   let getOrderArrayQuery = 'select orders.id, orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time, orders.served\
     from orders inner join combo on orders.combo_id = combo.id \
     inner join locker_schedule on orders.id = locker_schedule.orders_id';
 
