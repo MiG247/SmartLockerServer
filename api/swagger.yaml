@@ -272,7 +272,8 @@ paths:
           default:
             description: "unexpected error"
         x-swagger-router-controller: "Smartlocker"
-      post:
+  /locker/verify:
+      get:
         tags:
         - "Smartlocker"
         description: "verifies the PIN of a Locker. For LockerApp"
@@ -309,7 +310,7 @@ paths:
         x-swagger-router-controller: "Smartlocker"
 
   /auth:
-    post:
+    get:
       tags:
       - "Authentication"
       description: "Login to the Server and get a JSON WEB Token back."
@@ -322,7 +323,7 @@ paths:
           description: "Login informations"
           required: true
           schema:
-            $ref: "#/definitions/Staff"
+            $ref: "#/definitions/StaffLogin"
       responses:
         200:
           description: "OK"
@@ -335,6 +336,36 @@ paths:
           description: "unexpected error"
     x-swagger-router-controller: "Authentication"
 
+  /admintool/roles:
+    get:
+      tags:
+      - "Admintool"
+      description: "Returns a Array of all Server Roles. Only for Admin"
+      operationId: "getStaff"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Staff"
+        403:
+          description: "No permission to view this data, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+    x-swagger-router-controller: "Admintool"
+
+
+
 
 ################################################################################
 #                                     Definitions                              #
@@ -343,6 +374,17 @@ paths:
 definitions:
 
   Staff:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      admin:
+        description: "isAdmin? 0 = false, 1 = true"
+        type: "integer"
+        format: "int32"
+
+
+  StaffLogin:
     type: "object"
     properties:
       name:

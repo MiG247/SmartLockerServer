@@ -28,6 +28,9 @@ exports.auth = function (req, res, userName, cb) {
         massage: "No UserName in Token!"
       }));
     }
+    if(token.admin == 1){
+      return cb(token);
+    }
     if (token.userName !== userName) {
       return res.end(JSON.stringify({
         status: 403,
