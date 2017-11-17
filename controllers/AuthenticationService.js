@@ -21,7 +21,7 @@ exports.getToken = function(args, res, next){
   if (userSalt.salt === undefined) {
     return res.end(JSON.stringify({
       status: 406,
-      message: "Permission denied. Username or Password ar invalied."
+      message: "Permission denied. Username or Password or invalied."
     }));
   }
 
@@ -42,7 +42,7 @@ exports.getToken = function(args, res, next){
     if (rows[0] === undefined) {
       return res.end(JSON.stringify({
         status: 406,
-        message: "Permission denied. Username or Password ar invalied."
+        message: "Permission denied. Username or Password or invalied."
       }));
     }
     const payload = {

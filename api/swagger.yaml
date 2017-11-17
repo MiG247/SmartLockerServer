@@ -360,9 +360,43 @@ paths:
           description: "Not Found"
           schema:
              $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
         default:
           description: "unexpected error"
     x-swagger-router-controller: "Admintool"
+    patch:
+      tags:
+      - "Admintool"
+      description:  "Patches the Role password. Only for Admin"
+      operationId: "updatePassword"
+      parameters:
+        - in: "body"
+          name: "roleData"
+          description: "Information to Change the Password."
+          required: true
+          schema:
+            $ref: "#/definitions/PatchPassword"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to chage the Password, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
 
 
 
@@ -372,6 +406,19 @@ paths:
 ################################################################################
 
 definitions:
+
+  PatchPassword:
+    type: "object"
+    properties:
+      name:
+        description: "Rolename that needs a Password change"
+        type: "string"
+      newpassword:
+        description: "New Password"
+        type: "string"
+      adminpassword:
+        description: "Admin confirmation password"
+        type: "string"
 
   Staff:
     type: "object"

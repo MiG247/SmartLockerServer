@@ -5,6 +5,8 @@ const jwt = require('../jwt');
 const crypt = require('crypto');
 const fs = require('fs');
 const url = require('url');
+const security  = require('../security/Functions');
+const securityFile = './security/salt.txt';
 
 exports.decodeName = function (req) {
   var urlParts = url.parse(req.url, true);
@@ -46,7 +48,7 @@ exports.getSalt = function(user){
     Return the stored Salt from the server.
   */
 
-  var saltData = fs.readFileSync('./security/salt.txt');
+  var saltData = fs.readFileSync(securityFile);
 
   if (saltData === undefined) {
     console.error("Error reading salt.txt.");
@@ -105,81 +107,101 @@ function SaveSaltFile(salt, who, cb) {
    Checks the file for allready existing entrys.
    If entrys for the User exists you have to delete it from the file manuelly
    */
-
+  const newEntry = who+": "+salt+"\n";
   var buf = new Buffer(8192);
-  fs.open('./security/salt.txt', 'r+', function (err, fd) {
+  fs.open(securityFile, 'r+', function (err, fd) {
       if (err) {
-        return console.error(err);
+        return cb(err);
       }
       fs.read(fd, buf, 0, buf.length, 0, function(err, bytes) {
         if (err) {
-          console.log(err);
+          return cb(err);
         }
-        if (bytes > 0) {
+
           var file = buf.slice(0, bytes).toString();
           var re = new RegExp(who);
           var matches = file.match(re);
-          if (matches) {
-            console.log("Entry for "+who+" exists allready! Delete entry and retry again");
+          var indexOfDeletedEntry;
+          if (matches != null) {
+            // Entry for "who" exists allready! Delete entry and retry again
+            file = file.split("\n");
+            for (var i = 0; i < file.length; i++) {
+              if (file[i].match(re)) {
+                  delete file[i];
+                  indexOfDeletedEntry = i;
+              }
+            }
+            fs.writeFileSync(securityFile, "");
+
+            for (var i = 0; i < file.length; i++) {
+              if (i != indexOfDeletedEntry) {
+                if (file[i]!= '') {
+                  fs.appendFile(securityFile, file[i]+"\n", function(err) {
+                      if (err) {
+                        return cb(err);
+                      }
+                  });
+                }
+              }
+            }
+            fs.appendFile(securityFile, newEntry, function(err) {
+                if (err) {
+                  return cb(err);
+                }
+            });
             fs.close(fd, function(err) {
               if (err) {
-                console.log(err);
+                return cb(err);
               }
             });
-            return cb(true);
-          }else {
-            fs.appendFile('./security/salt.txt', who+": "+salt+"\n", function(err) {
+            return cb();
+          } //if(matches != null) end
+            fs.appendFile(securityFile, newEntry, function(err) {
                 if (err) {
-                  return console.error(err);
-                }
-            });
-            fs.close(fd, function(err) {
-              if (err) {
-                console.log(err);
-              }
-            });
-            return cb(false);
-          }
-        }else{
-            fs.appendFile('./security/salt.txt', who+": "+salt+"\n", function(err) {
-                if (err) {
-                  return console.error(err);
+                  return cb(err);
                 }
             });
             fs.close(fd, function(err) {
                 if (err) {
-                  console.log(err);
+                  return cb(err);
                 }
             });
-           return cb(false);
-        }
+           return cb();
       });
   });
 };
 
-function saveSaltedHashedPassword(user, userpassword) {
+exports.saveSaltedHashedPassword = function(user, userpassword, res) {
   /*
     Set a new Password for a Staff user
     Password will be safed into the Database Hashed and Salted
     Unhashed Salt will be saved into the Server Filesystem
     under ./security/salt.txt
   */
-
     var salt = genRandomString(16);
-    SaveSaltFile(salt, user, function(response) {
-      if (response) {
-        console.log("Follow the instructions above.");
+    SaveSaltFile(salt, user, function(err) {
+      if (err) {
+        return res.end({
+          status: 500,
+          message: err
+        });
       }else {
-        var passwordData = sha512(userpassword, salt);
+        var passwordData = security.sha512(userpassword, salt);
 
         let updatePass = 'UPDATE staff SET password = \''+passwordData.passwordHash+'\'\
         WHERE name = \''+user+'\';';
 
         db.mysql_db.query(updatePass, (err) =>{
           if (err) {
-           return console.error(err);
+            return res.end({
+             status: 500,
+             message: err
+           });
           }
-          console.log("New Passsword setted.");
+          return res.end(JSON.stringify({
+            status: 200,
+            message: "New password setted."
+          }));
         });
       }
     });
