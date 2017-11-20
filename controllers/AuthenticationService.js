@@ -19,10 +19,7 @@ exports.getToken = function(args, res, next){
   var userSalt = security.getSalt(username);
   //check for valid data
   if (userSalt.salt === undefined) {
-    return res.end(JSON.stringify({
-      status: 406,
-      message: "Permission denied. Username or Password or invalied."
-    }));
+    return security.responseMessage(res, 406, "Permission denied. Username or Password is invalied");
   }
 
   password = security.sha512(password, userSalt.salt);
@@ -35,15 +32,10 @@ exports.getToken = function(args, res, next){
 
   db.mysql_db.query(getUser, (err, rows) => {
     if (err) {
-      return res.end(JSON.stringify({
-        status: 500,
-        message: err}));
+        return security.responseMessage(res, 500, err);
     }
     if (rows[0] === undefined) {
-      return res.end(JSON.stringify({
-        status: 406,
-        message: "Permission denied. Username or Password or invalied."
-      }));
+      return security.responseMessage(res, 406, "Permission denied. Username or Password is invalied");
     }
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (60*60*24), //expires in 24h
@@ -53,10 +45,7 @@ exports.getToken = function(args, res, next){
 
     jwt.sign(payload, (err, token) =>{
         if (err) {
-          return res.end(JSON.stringify({
-            status: 403,
-            message: err
-          }));
+          return security.responseMessage(res, 403, err);
         }
         res.statusCode = 200;
         res.end(JSON.stringify({

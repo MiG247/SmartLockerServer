@@ -8,6 +8,13 @@ const url = require('url');
 const security  = require('../security/Functions');
 const securityFile = './security/salt.txt';
 
+exports.responseMessage = function (res, statusCode, massageData) {
+  return res.end(JSON.stringify({
+    status: statusCode,
+    massage: massageData
+  }));
+}
+
 exports.decodeName = function (req) {
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
@@ -19,25 +26,16 @@ exports.auth = function (req, res, userName, cb) {
   var query = urlParts.query;
   jwt.verify(req.headers['token'] || query.token, (err, token) => {
     if (err) {
-      return res.end(JSON.stringify({
-        status: 403,
-        massage: err
-      }));
+      return security.responseMessage(res, 403, err);
     }
     if (!token.userName) {
-      return res.end(JSON.stringify({
-        status: 403,
-        massage: "No UserName in Token!"
-      }));
+      return security.responseMessage(res, 403, "No UserName in Token!");
     }
     if(token.admin == 1){
       return cb(token);
     }
     if (token.userName !== userName) {
-      return res.end(JSON.stringify({
-        status: 403,
-        massage: "User: "+token.userName+" is not authorized!"
-      }));
+      return security.responseMessage(res, 403, "User: "+token.userName+" is not authorized!");
     }
     cb(token);
   });
@@ -181,10 +179,7 @@ exports.saveSaltedHashedPassword = function(user, userpassword, res) {
     var salt = genRandomString(16);
     SaveSaltFile(salt, user, function(err) {
       if (err) {
-        return res.end({
-          status: 500,
-          message: err
-        });
+        return security.responseMessage(res, 500, err);
       }else {
         var passwordData = security.sha512(userpassword, salt);
 
@@ -193,15 +188,9 @@ exports.saveSaltedHashedPassword = function(user, userpassword, res) {
 
         db.mysql_db.query(updatePass, (err) =>{
           if (err) {
-            return res.end({
-             status: 500,
-             message: err
-           });
+            return security.responseMessage(res, 500, err);
           }
-          return res.end(JSON.stringify({
-            status: 200,
-            message: "New password setted."
-          }));
+          return security.responseMessage(res, 200, "New password setted.");
         });
       }
     });

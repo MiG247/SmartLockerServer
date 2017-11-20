@@ -398,6 +398,177 @@ paths:
           description: "unexpected error"
       x-swagger-router-controller: "Admintool"
 
+  /admintool/combo:
+    get:
+      tags:
+      - "Admintool"
+      description: "Returns a combo Array. Only for Admin"
+      operationId: "getCombos"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/AdmintoolCombo"
+        403:
+          description: "No permission to get the Combo, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    post:
+      tags:
+      - "Admintool"
+      description: "Post a new Combo entry. Only for Admin"
+      operationId: "addCombo"
+      parameters:
+        - in: "body"
+          name: "combo"
+          description: "Information to add a new Combo."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolCombo"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to add new Combo, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    put:
+      tags:
+      - "Admintool"
+      description: "Update a Combo entry. Old ComboID is necessary. Only for Admin"
+      operationId: "update_Combo"
+      parameters:
+        - in: "body"
+          name: "combo"
+          description: "Information to update Combo."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolCombo"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to update a Combo, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    delete:
+      tags:
+      - "Admintool"
+      description: "Delete a Combo entry. ComboID is necessary. Only for Admin"
+      operationId: "deleteCombo"
+      parameters:
+        - in: "body"
+          name: "combo"
+          description: "Information to add a new Combo."
+          required: true
+          schema:
+            $ref: "#/definitions/Combo"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Combo, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+
+  /admintool/food:
+    get:
+      tags:
+      - "Admintool"
+      description: "Returns a food Array. Only for Admin"
+      operationId: "getFoods"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/AdmintoolFood"
+        403:
+          description: "No permission to get the Food, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    post:
+      tags:
+      - "Admintool"
+      description: "Post a new Food entry. Only for Admin"
+      operationId: "addFood"
+      parameters:
+        - in: "body"
+          name: "food"
+          description: "Information to add a new Food."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolFood"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to add new Food, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
 
 
 
@@ -406,6 +577,48 @@ paths:
 ################################################################################
 
 definitions:
+  AdmintoolFood:
+    type: "object"
+    properties:
+      food_id:
+        type: "integer"
+        format: "int32"
+        example: 34
+      food_name:
+        type: "string"
+        example: "Cooked Rice"
+      food_ingredient:
+        type: "array"
+        description: "Array of contained Ingredients."
+        items:
+          type: "integer"
+          format: "int32"
+
+  AdmintoolCombo:
+    type: "object"
+    properties:
+      combo_id:
+        type: "integer"
+        format: "int32"
+        example: 3
+      combo_name:
+        type: "string"
+        example: "combo 1"
+      combo_price:
+        type: "number"
+        format: "float"
+      combo_available:
+        type: "integer"
+        format: "int32"
+      photo:
+        type: "string"
+        format: "byte"
+      combo_food:
+        type: "array"
+        description: "Array of contained Food."
+        items:
+          type: "integer"
+          format: "int32"
 
   PatchPassword:
     type: "object"

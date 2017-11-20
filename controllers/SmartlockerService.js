@@ -20,22 +20,13 @@ exports.verifyPIN = function(args, res, next) {
 
    db.mysql_db.query(getLocker, (err, rows)=> {
      if(err){
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err
-       }));
+       return security.responseMessage(res, 500, err);
      }
      if(rows[0] === undefined){
-       return res.end(JSON.stringify({
-         status: 404,
-         message: "Locker Number not found"
-       }));
+       return security.responseMessage(res,404, "Locker Number not found.");
      }
      if (rows[0].PIN != lockerPIN) {
-       return res.end(JSON.stringify({
-         status: 406,
-         message: "Invalied PIN!"
-       }));
+       return security.responseMessage(res, 406, "Invalied PIN!");
      }
      res.setHeader('Content-Type', 'application/json');
      res.statusCode = 200;
@@ -54,10 +45,7 @@ exports.getLockerArray = function(args, res, next) {
 
    db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
      if (err) {
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err
-       }));
+       return security.responseMessage(res, 500, err);
      }
      res.setHeader('Content-Type', 'application/json');
      res.statusCode = 200;
@@ -91,40 +79,25 @@ exports.updateOrder = function(args, res, next) {
 
   db.mysql_db.query(getOrder, (err, rows) =>{
     if(err){
-      return res.end(JSON.stringify({
-        status: 500,
-        massage: err
-      }));
+      return security.responseMessage(res, 500, err);
     }
 
     if(rows[0] === undefined){
-      return res.end(JSON.stringify({
-        status: 406,
-        message: "Order Not Accepted. Invalied Data."
-      }))
+      return security.responseMessage(res, 406, "Order not Accepted. Invalied Data.");
     }
 
     let updateOrder = 'UPDATE orders SET served = 1 WHERE id = \''+rows[0].id+'\';';
     db.mysql_db.query(updateOrder, (err) =>{
       if(err){
-        return res.end(JSON.stringify({
-          status: 500,
-          massage: err
-        }));
+        return security.responseMessage(res, 500, err);
       }
 
       let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
       db.mysql_db.query(updateLocker, (err) =>{
         if(err){
-          return res.end(JSON.stringify({
-            status: 500,
-            massage: err
-          }));
+          return security.responseMessage(res, 500, err);
         }
-        res.end(JSON.stringify({
-          status: 200,
-          message: "Order for "+pickup_time+" with combo "+combo_id+" into locker "+locker_nr+" has been served."
-        }));
+        return security.responseMessage(res, 200, "Order for "+pickup_time+" with combo "+combo_id+" into locker "+locker_nr+" has been served.");
       });
     });
   });
@@ -144,27 +117,18 @@ exports.updateCombo = function(args, res, next){
 
   db.mysql_db.query(getCombo, (err, rows) =>{
     if(err){
-      return res.end(JSON.stringify({
-          status: 500,
-          massage: err
-      }));
+      return security.responseMessage(res, 500, err);
     }
 
     if(rows[0] === undefined){
-      return res.end(JSON.stringify({
-        status: 406,
-        message: "Combo Not Accepted. Invalied Data."
-      }))
+      return security.responseMessage(res, 406, "Combo Not Accepted. Invalied Data.");
     }
 
     let updateCombo = 'UPDATE combo SET combo_available = '+available+' WHERE id = '+id;
 
     db.mysql_db.query(updateCombo, (err) =>{
       if(err){
-        return res.end(JSON.stringify({
-          status: 500,
-          massage: err
-        }));
+        return security.responseMessage(res, 500, err);
       }
         rows[0].combo_available = available;
         res.setHeader('Content-Type', 'application/json');
@@ -185,10 +149,7 @@ exports.getOrderArray = function(args, res, next) {
 
    db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
      if (err) {
-      return res.end(JSON.stringify({
-         status: 500,
-         message: err
-       }));
+      return security.responseMessage(res, 500, err);
      }
      res.setHeader('Content-Type', 'application/json');
      res.statusCode = 200;
@@ -215,35 +176,21 @@ exports.setOrder = function(args, res, next) {
 
    db.mysql_db.query(availableQuery, (err, rows) =>{
      if(err){
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err}));
+       return security.responseMessage(res, 500, err);
      }
      if(rows[0] === undefined){
-       return res.end(JSON.stringify({
-         status: 406,
-         message: "Order Not Accepted. Invalied Data."
-       }));
+       return security.responseMessage(res, 406, "Order Not Accepted. Invalied Data.");
      }else if(rows[0].schedule_available == 0){
-       return res.end(JSON.stringify({
-         status: 406,
-         message: "Order Not Accepted. Time is not available."
-       }));
+       return security.responseMessage(res, 406, "Order Not Accepted. Time is not available.");
      }else if (rows[0].combo_available == 0){
-       return res.end(JSON.stringify({
-         status: 406,
-         message: "Order Not Accepted. Combo is not available."
-       }));
+       return security.responseMessage(res, 406, "Order Not Accepted. Combo is not available.");
      }else{
        // check for available locker
        let getAvailableLockerQuery = 'SELECT nr FROM locker WHERE NOT nr IN \
        (SELECT locker_nr FROM locker_schedule WHERE pickup_time= \''+pickupTime+'\')';
        db.mysql_db.query(getAvailableLockerQuery, (err, rows) =>{
          if(err){
-           return res.end(JSON.stringify({
-             status: 500,
-             message: err
-           }));
+           return security.responseMessage(res, 500, err);
          }
          let insertOrderQuery = '';
 
@@ -263,9 +210,7 @@ exports.setOrder = function(args, res, next) {
 
          db.mysql_db.query(insertOrderQuery, (err, rows) => {
            if (err) {
-               return res.end(JSON.stringify({
-                 status: 500,
-                 message: err}));
+             return security.responseMessage(res, 500, err);
            }
            const payload = {
              exp: Math.floor(Date.now() / 1000) + (60*60*24), //expires in 24h
@@ -274,10 +219,7 @@ exports.setOrder = function(args, res, next) {
            };
            jwt.sign(payload, (err, token) =>{
                if (err) {
-                 return res.end(JSON.stringify({
-                   status: 403,
-                   message: err
-                 }));
+                 return security.responseMessage(res, 403, err);
                }
                res.statusCode = 200;
                res.end(JSON.stringify({
@@ -309,9 +251,7 @@ exports.getComboFood = function(args, res, next) {
 
    db.mysql_db.query(query, (err, rows) => {
      if (err) {
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err}));
+       return security.responseMessage(res, 500, err);
      }
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
@@ -333,9 +273,7 @@ exports.getOrder = function(args, res, next) {
 
    db.mysql_db.query(query, (err, rows) => {
      if (err) {
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err}));
+       return security.responseMessage(res, 500, err);
      }
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
@@ -357,9 +295,7 @@ SELECT food_id FROM food_combo WHERE combo_id ='+escape(args.comboID.value)+'))'
 
     db.mysql_db.query(query, (err, rows) => {
         if (err) {
-            return res.end(JSON.stringify({
-                status: 500,
-                message: err}));
+          return security.responseMessage(res, 500, err);
         }
         res.statusCode = 200;
         res.end(JSON.stringify(rows));
@@ -403,15 +339,10 @@ exports.getComboArray = function(args, res, next) {
 
    db.mysql_db.query(query, (err, rows) => {
      if (err) {
-       return res.end(JSON.stringify({
-         status: 500,
-         message: err}));
+       return security.responseMessage(res, 500, err);
      }
      if(rows[0] === undefined){
-       return res.end(JSON.stringify({
-         status: 404,
-         message: "No Combos. Invalied Data."
-       }))
+              return security.responseMessage(res, 404, "No Combos. Invalied Data.");
      }else {
 
        for (var i = 0; i < rows.length; i++) {
@@ -437,9 +368,7 @@ exports.getTimeSchedule = function(args, res, next) {
 
   db.mysql_db.query(query, (err, rows) => {
     if (err) {
-      return res.end(JSON.stringify({
-        status: 500,
-        message: err}));
+      return security.responseMessage(res, 500, err);
     }
       res.statusCode = 200;
       res.end(JSON.stringify(rows));
