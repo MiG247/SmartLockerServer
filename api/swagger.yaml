@@ -310,7 +310,7 @@ paths:
         x-swagger-router-controller: "Smartlocker"
 
   /auth:
-    get:
+    post:
       tags:
       - "Authentication"
       description: "Login to the Server and get a JSON WEB Token back."
