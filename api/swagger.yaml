@@ -27,7 +27,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'combo' objects. For Clerk and Client."
+      description: "Gets an array of 'combo' objects."
       operationId: "getComboArray"
       parameters:
       - $ref: "#/parameters/size"
@@ -51,7 +51,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets an array of 'timeschedule' objects. For Clerk and Client"
+      description: "Gets an array of 'timeschedule' objects."
       operationId: "getTimeSchedule"
       responses:
         200:
@@ -125,7 +125,7 @@ paths:
     get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from an order. Only for Client."
+      description: "Gets the basic informations from an order. Client token or Clerk token."
       operationId: "getOrder"
       parameters: []
       responses:
@@ -173,7 +173,7 @@ paths:
      get:
       tags:
       - "Smartlocker"
-      description: "Gets the basic informations from the food ingredients. For Clerk and Client"
+      description: "Gets the basic informations from the food ingredients."
       operationId: "getComboIngredient"
       parameters: []
       responses:
@@ -226,7 +226,7 @@ paths:
       put:
         tags:
         - "Smartlocker"
-        description: "Sets an order to served. For Clerk"
+        description: "Sets an order to served. Clerk Token"
         operationId: "updateOrder"
         consumes:
         - application/json
@@ -256,7 +256,7 @@ paths:
       get:
         tags:
         - "Smartlocker"
-        description: "Gets an array of 'orders' objects. For LockerApp."
+        description: "Gets an array of 'orders' objects."
         operationId: "getLockerArray"
         responses:
           200:
@@ -276,7 +276,7 @@ paths:
       get:
         tags:
         - "Smartlocker"
-        description: "verifies the PIN of a Locker. For LockerApp"
+        description: "verifies the PIN of a Locker. LockerApp Token"
         operationId: "verifyPIN"
         consumes:
           - application/json
@@ -591,8 +591,11 @@ definitions:
         type: "array"
         description: "Array of contained Ingredients."
         items:
-          type: "integer"
-          format: "int32"
+          type: "object"
+          properties:
+            ingredient_id:
+              type: "integer"
+              format: "int32"
 
   AdmintoolCombo:
     type: "object"
@@ -617,8 +620,11 @@ definitions:
         type: "array"
         description: "Array of contained Food."
         items:
-          type: "integer"
-          format: "int32"
+          type: "object"
+          properties:
+            food_id:
+              type: "integer"
+              format: "int32"
 
   PatchPassword:
     type: "object"

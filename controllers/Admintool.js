@@ -36,13 +36,19 @@ module.exports.deleteCombo = function deleteCombo (req, res, next) {
 };
 
 module.exports.getCombos = function getCombos (req, res, next) {
-  Admintool.getCombos(req.swagger.params, res, next);
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.getCombos(req.swagger.params, res, next);
+  });
 };
 
 module.exports.getFoods = function getFoods (req, res, next) {
-  Admintool.getFoods(req.swagger.params, res, next);
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.getFoods(req.swagger.params, res, next);
+  });
 };
 
 module.exports.addFood = function addFood (req, res, next) {
-  Admintool.addFood(req.swagger.params, res, next);
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.addFood(req.swagger.params, res, next);
+  });
 };
