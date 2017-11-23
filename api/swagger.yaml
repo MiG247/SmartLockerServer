@@ -493,10 +493,10 @@ paths:
       parameters:
         - in: "body"
           name: "combo"
-          description: "Information to add a new Combo."
+          description: "Information to delete a Combo."
           required: true
           schema:
-            $ref: "#/definitions/Combo"
+            $ref: "#/definitions/AdmintoolCombo"
       responses:
         200:
           description: "OK"
@@ -569,14 +569,283 @@ paths:
         default:
           description: "unexpected error"
       x-swagger-router-controller: "Admintool"
+    put:
+      tags:
+      - "Admintool"
+      description: "Update a Food entry. Old FoodID is necessary. Only for Admin"
+      operationId: "update_Food"
+      parameters:
+        - in: "body"
+          name: "food"
+          description: "Information to update Food."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolFood"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to update a Food, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    delete:
+      tags:
+      - "Admintool"
+      description: "Delete a Food entry. FoodID is necessary. Only for Admin"
+      operationId: "deleteFood"
+      parameters:
+        - in: "body"
+          name: "food"
+          description: "Information to delete a Food."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolFood"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Food, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
 
+  /admintool/ingredient:
+    get:
+      tags:
+      - "Admintool"
+      description: "Returns a ingredient Array. Only for Admin"
+      operationId: "getIngredients"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/AdmintoolIngredient"
+        403:
+          description: "No permission to get the Ingredient, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    post:
+      tags:
+      - "Admintool"
+      description: "Post a new ingredient entry. Only for Admin"
+      operationId: "addIngredient"
+      parameters:
+        - in: "body"
+          name: "ingredient"
+          description: "Information to add a new Ingredient."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolIngredient"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to add new Ingredient, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    put:
+      tags:
+      - "Admintool"
+      description: "Update a Ingredient entry. Old Ingredient is necessary. Only for Admin"
+      operationId: "update_Ingredient"
+      parameters:
+        - in: "body"
+          name: "ingredient"
+          description: "Information to update Food."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolIngredient"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to update a Ingredient, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    delete:
+      tags:
+      - "Admintool"
+      description: "Delete a Ingredient entry. IngredientID is necessary. Only for Admin"
+      operationId: "deleteIngredient"
+      parameters:
+        - in: "body"
+          name: "ingredient"
+          description: "Information to delete a Ingredient."
+          required: true
+          schema:
+            $ref: "#/definitions/AdmintoolIngredient"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Ingredient, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
 
+  /admintool/schedule:
+    post:
+      tags:
+      - "Admintool"
+      description: "Post a new schedule entry. Only for Admin"
+      operationId: "addSchedule"
+      parameters:
+        - in: "body"
+          name: "schedule"
+          description: "Information to add a new Schedule."
+          required: true
+          schema:
+            $ref: "#/definitions/TimeSchedule"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to add new Schedule, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    put:
+      tags:
+      - "Admintool"
+      description: "Update a Schedule entry. Old Schedule is necessary. Only for Admin"
+      operationId: "update_Schedule"
+      parameters:
+        - in: "body"
+          name: "schedule"
+          description: "Information to update Schedule."
+          required: true
+          schema:
+            $ref: "#/definitions/TimeSchedule"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to update a Schedule, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    delete:
+      tags:
+      - "Admintool"
+      description: "Delete a Schedule entry. ScheduleID is necessary. Only for Admin"
+      operationId: "deleteSchedule"
+      parameters:
+        - in: "body"
+          name: "schedule"
+          description: "Information to delete a Schedule."
+          required: true
+          schema:
+            $ref: "#/definitions/TimeSchedule"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Schedule, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
 
 ################################################################################
 #                                     Definitions                              #
 ################################################################################
 
 definitions:
+
+  AdmintoolIngredient:
+    type: "object"
+    properties:
+      ingredient_id:
+        type: "integer"
+        format: "int32"
+      ingredient_name:
+        type: "string"
   AdmintoolFood:
     type: "object"
     properties:
@@ -824,11 +1093,10 @@ definitions:
     properties:
       pickup_time:
         type: "string"
-        format: "date-time"
         example: "10:30"
       schedule_available:
-        type: "boolean"
-        example: "true = 1, false = 0"
+        type: "integer"
+        format: "int32"
 
   ErrorModel:
     type: "object"

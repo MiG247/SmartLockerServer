@@ -18,27 +18,55 @@ exports.responseMessage = function (res, statusCode, massageData) {
 exports.decodeName = function (req) {
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
-  return jwt.decode(req.headers['token'] || query.token);
+
+  if ((req.headers['token'] || query.token) != undefined) {
+    return jwt.decode(req.headers['token'] || query.token);
+  }
+  if ((req.headers['api_key'] || query.api_key) != undefined) {
+    return jwt.decode(req.headers['api_key'] || query.api_key);
+  }
+  console.error("Missing Token!");
 }
 
 exports.auth = function (req, res, userName, cb) {
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
-  jwt.verify(req.headers['token'] || query.token, (err, token) => {
-    if (err) {
-      return security.responseMessage(res, 403, err);
-    }
-    if (!token.userName) {
-      return security.responseMessage(res, 403, "No UserName in Token!");
-    }
-    if(token.admin == 1){
-      return cb(token);
-    }
-    if (token.userName !== userName) {
-      return security.responseMessage(res, 403, "User: "+token.userName+" is not authorized!");
-    }
-    cb(token);
-  });
+
+  if ((req.headers['token'] || query.token) != undefined) {
+    jwt.verify(req.headers['token'] || query.token, (err, token) => {
+      if (err) {
+        return security.responseMessage(res, 403, err);
+      }
+      if (!token.userName) {
+        return security.responseMessage(res, 403, "No UserName in Token!");
+      }
+      if(token.admin == 1){
+        return cb(token);
+      }
+      if (token.userName !== userName) {
+        return security.responseMessage(res, 403, "User: "+token.userName+" is not authorized!");
+      }
+      cb(token);
+    });
+  }
+  if ((req.headers['api_key'] || query.api_key) != undefined) {
+    jwt.verify(req.headers['api_key'] || query.api_key, (err, token) => {
+      if (err) {
+        return security.responseMessage(res, 403, err);
+      }
+      if (!token.userName) {
+        return security.responseMessage(res, 403, "No UserName in Token!");
+      }
+      if(token.admin == 1){
+        return cb(token);
+      }
+      if (token.userName !== userName) {
+        return security.responseMessage(res, 403, "User: "+token.userName+" is not authorized!");
+      }
+      cb(token);
+    });
+  }
+
 }
 
 exports.getSalt = function(user){
