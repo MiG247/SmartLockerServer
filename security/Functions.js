@@ -15,7 +15,7 @@ exports.responseMessage = function (res, statusCode, massageData) {
   }));
 }
 
-exports.decodeName = function (req) {
+exports.decodeName = function (req, res) {
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
 
@@ -25,7 +25,7 @@ exports.decodeName = function (req) {
   if ((req.headers['api_key'] || query.api_key) != undefined) {
     return jwt.decode(req.headers['api_key'] || query.api_key);
   }
-  console.error("Missing Token!");
+  return security.responseMessage(res, 403, "Missing Token!");
 }
 
 exports.auth = function (req, res, userName, cb) {
