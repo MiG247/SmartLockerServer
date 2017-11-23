@@ -24,7 +24,7 @@ module.exports.getTimeSchedule = function getTimeSchedule (req, res, next) {
 };
 
 module.exports.getOrder = function getOrder (req, res, next) {
-  var userName = security.decodeName(req).userName; //userName stored in token
+  var userName = security.decodeName(req, res).userName; //userName stored in token
   if (userName === "Clerk" ) {
     security.auth(req, res, "Clerk", () =>{
       Smartlocker.getOrder(req.swagger.params, res, next);
@@ -70,4 +70,3 @@ module.exports.updateOrder = function updateOrder (req, res, next) {
 module.exports.getLockerArray = function getLockerArray (req, res, next) {
   Smartlocker.getLockerArray(req.swagger.params, res, next);
 };
-
