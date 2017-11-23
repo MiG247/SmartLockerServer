@@ -66,7 +66,7 @@ exports.updateOrder = function(args, res, next) {
    // seq is a PIN generator
   var seq = parseInt(Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
   var find = '%3A';
-  var re = new RegExp(find);
+  var re = new RegExp(find, "g");
   var combo_id = escape(args.close_order.value.combo_id);
   var pickup_time = escape(args.close_order.value.pickup_time);
   var locker_nr = escape(args.close_order.value.locker_nr);
@@ -166,7 +166,7 @@ exports.setOrder = function(args, res, next) {
    * returns Order/properties/id
    **/
    var find = '%3A';
-   var re = new RegExp(find);
+   var re = new RegExp(find, "g");
    var pickupTime = escape(args.set_order.value.pickup_time);
    var comboID = escape(args.set_order.value.combo_id);
    pickupTime = pickupTime.replace(re, ':');

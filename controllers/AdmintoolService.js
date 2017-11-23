@@ -4,308 +4,79 @@ const fs = require('fs');
 const db = require('../MySQL');
 const jwt = require('../jwt');
 const security  = require('../security/Functions');
+const foodFunctions = require('../Admintool/foodFunctions');
+const comboFunctions = require('../Admintool/comboFunctions');
+const roleFunctions = require('../Admintool/roleFunctions');
+const ingredientFunctions = require('../Admintool/ingredientFunctions');
+const scheduleFunctions = require('../Admintool/scheduleFunctions');
 const adminRole = "Admin";
 
 exports.adminRole = adminRole;
 
-exports.addFood = function(args, res, next) {
-  /**
-   * Post a new Food entry. Only for Admin
-   *
-   * food AdmintoolFood Information to add a new Food.
-   * no response value expected for this operation
-   **/
-   var food_name = escape(args.food.value.food_name);
-   var food_ingredient = args.food.value.food_ingredient;
+exports.update_Schedule = function update_Schedule (req, res, next) {
+  scheduleFunctions.update_Schedule(req, res, next);
+};
 
-   let insertFoodQuery = 'INSERT INTO food (name) \
-   VALUES(\''+food_name+'\');\
-   SELECT id FROM food WHERE name = \''+food_name+'\';';
-   db.mysql_db.query(insertFoodQuery, (err, rows) =>{
-     if (err) {
-       return security.responseMessage(res, 500, err);
-     }
-     if (food_ingredient[0] === undefined) {
-       return security.responseMessage(res, 200, "Successfully posted new Food.");
-     }
-     var food_id = rows[1][0].id;
-     var lastIndex = (food_ingredient.length-1);
-     for (var i = 0; i < food_ingredient.length; i++) {
+exports.deleteSchedule = function deleteSchedule (req, res, next) {
+  scheduleFunctions.deleteSchedule(req, res, next);
+};
 
-       let insertComboFoodQuery = 'INSERT INTO food_ingredient (ingredient_id, food_id)\
-       VALUES('+food_ingredient[i].ingredient_id+','+food_id+');\
-       SELECT ingredient_id FROM food_ingredient WHERE ingredient_id ='+food_ingredient[i].ingredient_id+'\
-       AND food_id ='+food_id+';';
+exports.addSchedule = function addSchedule (req, res, next) {
+  scheduleFunctions.addSchedule(req, res, next);
+};
 
-       db.mysql_db.query(insertComboFoodQuery, (err, rows2)=>{
-         if (err) {
-           return security.responseMessage(res, 500, err);
-         }
-         if (rows2[1][0].ingredient_id == food_ingredient[lastIndex].ingredient_id) {
-             return security.responseMessage(res, 200, "Successfully posted new Food.");
-         }
-       });
-     }
-   });
-}
-exports.getFoods = function(args, res, next) {
-  /**
-   * Returns a food Array. Only for Admin
-   *
-   * size Integer Size of array to receive (optional)
-   * offset Integer Start index of the source (optional)
-   * returns List
-   **/
-   let getFoodsQuery = 'SELECT * FROM food';
+exports.addIngredient = function addIngredient (req, res, next) {
+  ingredientFunctions.addIngredient(req, res, next);
+};
 
-   db.mysql_db.query(getFoodsQuery, (err, rows) => {
-     if (err) {
-       return security.responseMessage(res, 500, err);
-     }
-     if (rows[0] === undefined) {
-       return security.responseMessage(res, 404, "No data found on the Database");
-     }
-     var lastIndex = (rows.length-1);
-     for (var i = 0; i < rows.length; i++) {
+exports.deleteIngredient = function deleteIngredient (req, res, next) {
+  ingredientFunctions.deleteIngredient(req, res, next);
+};
 
-       let FoodIngredientQuery = 'SELECT * FROM food_ingredient WHERE food_id = '+rows[i].id+';';
+exports.getIngredients = function getIngredients (req, res, next) {
+  ingredientFunctions.getIngredients(req, res, next);
+};
 
-       db.mysql_db.query(FoodIngredientQuery, (err, rows2)=>{
-        if (err) {
-          return security.responseMessage(res, 500, err);
-        }
+exports.update_Ingredient = function update_Ingredient (req, res, next) {
+  ingredientFunctions.update_Ingredient(req, res, next);
+};
 
-        if (rows2[0] === undefined) {
-          return;
-        }
+exports.getStaff = function getStaff (req, res, next) {
+    roleFunctions.getStaff(req, res, next);
+};
 
-        for (var p = 0; p < rows.length; p++) {
-          if (rows[p].id == rows2[0].food_id) {
-            rows[p].food_ingredient = rows2;
-            for (var i = 0; i < rows2.length; i++) {
-              rows[p].food_ingredient[i] = {ingredient_id: rows2[i].ingredient_id};
-            }
-          }
-          if (rows[lastIndex].food_ingredient != undefined) {
-              res.setHeader('Content-Type', 'application/json');
-              res.statusCode = 200;
-              res.end(JSON.stringify(rows));
-          }
-        }
-       });
-     }
-   });
-}
-exports.getCombos = function(args, res, next) {
-  /**
-   * Returns a combo Array. Only for Admin
-   *
-   * size Integer Size of array to receive (optional)
-   * offset Integer Start index of the source (optional)
-   * returns List
-   **/
-   let getCombosQuery = 'SELECT id, name, price, combo_available, photo FROM combo;';
+exports.updatePassword = function updatePassword (req, res, next) {
+    roleFunctions.updatePassword(req, res, next);
+};
 
-   db.mysql_db.query(getCombosQuery, (err, rows) => {
-     if (err) {
-       return security.responseMessage(res, 500, err);
-     }
-     if (rows[0] === undefined) {
-       return security.responseMessage(res, 404, "No data found on the Database");
-     }
-     var lastIndex = (rows.length-1);
-     for (var i = 0; i < rows.length; i++) {
-       rows[i].photo = new Buffer(rows[i].photo).toString('base64');
-       let ComboFoodQuery = 'SELECT combo_id, food_id FROM food_combo WHERE combo_id = '+rows[i].id+';';
-       db.mysql_db.query(ComboFoodQuery, (err, rows2)=>{
-        if (err) {
-          return security.responseMessage(res, 500, err);
-        }
-        if (rows2[0] === undefined) {
-          return;
-        }
-        for (var p = 0; p < rows.length; p++) {
-          if (rows[p].id == rows2[0].combo_id) {
-            rows[p].combo_food = rows2;
-            for (var i = 0; i < rows2.length; i++) {
-              rows[p].combo_food[i] = {food_id: rows2[i].food_id};
-            }
-          }
-          if (rows[lastIndex].combo_food != undefined) {
-              res.setHeader('Content-Type', 'application/json');
-              res.statusCode = 200;
-              res.end(JSON.stringify(rows));
-          }
-        }
-       });
-     }
-   });
-}
+exports.update_Combo = function update_Combo (req, res, next) {
+    comboFunctions.update_Combo(req, res, next);
+};
 
-exports.getStaff = function(args, res, next) {
-  /**
-   * Returns a Array of all Server Roles
-   *
-   * size Integer Size of array to receive (optional)
-   * offset Integer Start index of the source (optional)
-   * returns List
-   **/
-  let getStaffquery = "SELECT name, admin FROM staff"
+exports.addCombo = function addCombo (req, res, next) {
+    comboFunctions.addCombo(req, res, next);
+};
 
-  db.mysql_db.query(getStaffquery, (err, rows) =>{
-    if (err) {
-      return security.responseMessage(res, 500, err);
-    }
-    if (rows[0] === undefined) {
-      return security.responseMessage(res, 404, "No data found on the Database");
-    }
-    res.setHeader('Content-Type', 'application/json');
-    res.statusCode = 200;
-    res.end(JSON.stringify(rows));
-  });
-}
+exports.deleteCombo = function deleteCombo (req, res, next) {
+    comboFunctions.deleteCombo(req, res, next);
+};
 
-exports.updatePassword = function(args, res, next) {
-  /**
-   * Patches the Role password. Only for Admin
-   *
-   * roleData PatchPassword Information to Change the Password.
-   * no response value expected for this operation
-   **/
-   var adminPassword = escape(args.roleData.value.adminpassword);
-   var adminSalt = security.getSalt(adminRole).salt;
-   adminPassword = security.sha512(adminPassword, adminSalt).passwordHash;
-   var newPassword = escape(args.roleData.value.newpassword);
-   var roleName = escape(args.roleData.value.name);
+exports.getCombos = function getCombos (req, res, next) {
+    comboFunctions.getCombos(req, res, next);
+};
 
-   let verifyAdminQuery = "SELECT name FROM staff WHERE password = \'"+adminPassword+"\';";
+exports.addFood = function addFood (req, res, next) {
+    foodFunctions.addFood(req, res, next);
+};
 
-   db.mysql_db.query(verifyAdminQuery, (err, rows) =>{
-     if (err) {
-       return security.responseMessage(res, 500, err);
-     }
-     if(rows[0] === undefined){
-       return security.responseMessage(res, 406, "Invalied AdminPassword");
-     }
+exports.update_Food = function update_Food (req, res, next) {
+    foodFunctions.update_Food(req, res, next);
+};
 
-     let verifyRoleNameQuery = "SELECT name FROM staff WHERE name =\'"+roleName+"\';";
-     db.mysql_db.query(verifyRoleNameQuery, (err, rows) =>{
-       if (err) {
-         return security.responseMessage(res, 500, err);
-       }
-       if(rows[0] === undefined){
-         return security.responseMessage(res, 404, "Invalied Rolename");
-       }
-       security.saveSaltedHashedPassword(roleName, newPassword, res);
-     });
-   });
-}
+exports.deleteFood = function deleteFood (req, res, next) {
+    foodFunctions.deleteFood(req, res, next);
+};
 
-exports.addCombo = function(args, res, next) {
-  /**
-   * Post a new Combo entry. Only for Admin
-   *
-   * combo Combo Information to add a new Combo.
-   * no response value expected for this operation
-   **/
-  var combo_name = escape(args.combo.value.combo_name);
-  var combo_price = escape(args.combo.value.combo_price);
-  var combo_available = escape(args.combo.value.combo_available);
-  var combo_photo = escape(args.combo.value.photo);
-  var combo_food = args.combo.value.combo_food;
-
-  let insertComboQuery = 'INSERT INTO combo (name, price, combo_available, photo) \
-  VALUES(\''+combo_name+'\','+combo_price+','+combo_available+',\''+combo_photo+'\');\
-  SELECT id FROM combo WHERE name = \''+combo_name+'\';';
-  db.mysql_db.query(insertComboQuery, (err, rows) =>{
-    if (err) {
-      return security.responseMessage(res, 500, err);
-    }
-    if (combo_food[0] === undefined) {
-      return security.responseMessage(res, 200, "Successfully posted new Combo.");
-    }
-    var combo_id = rows[1][0].id;
-    var lastIndex = (combo_food.length-1);
-    for (var i = 0; i < combo_food.length; i++) {
-
-      let insertComboFoodQuery = 'INSERT INTO food_combo (food_id, combo_id)\
-      VALUES('+combo_food[i].food_id+','+combo_id+');\
-      SELECT food_id FROM food_combo WHERE food_id ='+combo_food[i].food_id+'\
-      AND combo_id ='+combo_id+';';
-
-      db.mysql_db.query(insertComboFoodQuery, (err, rows2)=>{
-        if (err) {
-          return security.responseMessage(res, 500, err);
-        }
-        if (rows2[1][0].food_id == combo_food[lastIndex].food_id) {
-            return security.responseMessage(res, 200, "Successfully posted new Combo.");
-        }
-      });
-    }
-  });
-}
-
-exports.deleteCombo = function(args, res, next) {
-  /**
-   * Delete a Combo entry. Only for Admin
-   *
-   * combo Combo Information to add a new Combo.
-   * no response value expected for this operation
-   **/
-  var combo_id = escape(args.combo.value.combo_id);
-  let deleteComboQuery =  'DELETE FROM food_combo WHERE combo_id ='+combo_id+'; \
-  DELETE FROM combo WHERE id = '+combo_id+';';
-
-  db.mysql_db.query(deleteComboQuery, (err)=>{
-    if (err) {
-      return security.responseMessage(res, 500, err);
-    }
-    return security.responseMessage(res, 200, "Successfully deleted combo with the id:"+combo_id+".");
-  });
-}
-
-exports.update_Combo = function(args, res, next) {
-  /**
-   * Update a Combo entry. Only for Admin
-   *
-   * combo Combo Information to update Combo.
-   * no response value expected for this operation
-   **/
-  var combo_id = escape(args.combo.value.combo_id);
-  var combo_name = escape(args.combo.value.combo_name);
-  var combo_price = escape(args.combo.value.combo_price);
-  var combo_available = escape(args.combo.value.combo_available);
-  var combo_photo = escape(args.combo.value.photo);
-  var combo_food = args.combo.value.combo_food;
-
-  let updateComboQuery = 'UPDATE combo SET name = \''+combo_name+'\', price =\
-    '+combo_price+', combo_available = '+combo_available+', photo = \
-    \''+combo_photo+'\' WHERE id = '+combo_id+'; \
-    DELETE FROM food_combo WHERE combo_id ='+combo_id+'; ';
-  db.mysql_db.query(updateComboQuery, (err) =>{
-     if(err){
-       return security.responseMessage(res, 500, err);
-     }
-     if (combo_food[0] === undefined) {
-       return security.responseMessage(res, 200, "Successfully posted new Combo.");
-     }
-
-     var lastIndex = (combo_food.length-1);
-     for (var i = 0; i < combo_food.length; i++) {
-
-       let insertComboFoodQuery = 'INSERT INTO food_combo (food_id, combo_id)\
-       VALUES('+combo_food[i].food_id+','+combo_id+');\
-       SELECT food_id FROM food_combo WHERE food_id ='+combo_food[i].food_id+'\
-       AND combo_id ='+combo_id+';';
-
-       db.mysql_db.query(insertComboFoodQuery, (err, rows2)=>{
-         if (err) {
-           return security.responseMessage(res, 500, err);
-         }
-         if (rows2[1][0].food_id == combo_food[lastIndex].food_id) {
-           return security.responseMessage(res, 200, "Successfully updated Combo with the id:"+combo_id+".");
-         }
-       });
-     }
-  });
-}
+exports.getFoods = function getFoods (req, res, next) {
+    foodFunctions.getFoods(req, res, next);
+};
