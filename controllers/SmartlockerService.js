@@ -37,13 +37,13 @@ exports.verifyPIN = function(args, res, next) {
 
 exports.getLockerArray = function(args, res, next) {
   /**
-   * Gets an array of 'orders' objects
+   * Gets an array of 'locker' objects
    *
    * returns List
    **/
-   let getOrderArrayQuery = 'SELECT nr FROM locker;';
+   let getLockerArrayQuery = 'SELECT nr FROM locker;';
 
-   db.mysql_db.query(getOrderArrayQuery, (err, rows) =>{
+   db.mysql_db.query(getLockerArrayQuery, (err, rows) =>{
      if (err) {
        return security.responseMessage(res, 500, err);
      }

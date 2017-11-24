@@ -97,7 +97,8 @@ exports.deleteFood = function(args, res, next) {
    * no response value expected for this operation
    **/
    var food_id = escape(args.food.value.food_id);
-   let deleteFoodQuery =  'DELETE FROM food_ingredient WHERE food_id ='+food_id+'; \
+   let deleteFoodQuery =  'DELETE FROM food_combo WHERE food_id'+food_id+';\
+   DELETE FROM food_ingredient WHERE food_id ='+food_id+'; \
    DELETE FROM food WHERE id = '+food_id+';';
 
    db.mysql_db.query(deleteFoodQuery, (err)=>{
