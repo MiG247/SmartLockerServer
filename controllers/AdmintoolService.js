@@ -9,9 +9,35 @@ const comboFunctions = require('../Admintool/comboFunctions');
 const roleFunctions = require('../Admintool/roleFunctions');
 const ingredientFunctions = require('../Admintool/ingredientFunctions');
 const scheduleFunctions = require('../Admintool/scheduleFunctions');
+const lockerFunctions = require('../Admintool/lockerFunctions');
+const orderFunctions = require('../Admintool/orderFunctions');
 const adminRole = "Admin";
 
 exports.adminRole = adminRole;
+
+exports.deleteOrder = function deleteOrder (req, res, next) {
+  orderFunctions.deleteOrder(req, res, next);
+};
+
+exports.update_Order = function update_Order (req, res, next) {
+  orderFunctions.update_Order(req, res, next);
+};
+
+exports.addLocker = function addLocker (req, res, next) {
+  lockerFunctions.addLocker(req, res, next);
+};
+
+exports.deleteLocker = function deleteLocker (req, res, next) {
+  lockerFunctions.deleteLocker(req, res, next);
+};
+
+exports.getLocker = function getLocker (req, res, next) {
+  lockerFunctions.getLocker(req, res, next);
+};
+
+exports.update_Locker = function update_Locker (req, res, next) {
+  lockerFunctions.update_Locker(req, res, next);
+};
 
 exports.update_Schedule = function update_Schedule (req, res, next) {
   scheduleFunctions.update_Schedule(req, res, next);

@@ -691,7 +691,7 @@ paths:
       parameters:
         - in: "body"
           name: "ingredient"
-          description: "Information to update Food."
+          description: "Information to update Ingredient."
           required: true
           schema:
             $ref: "#/definitions/AdmintoolIngredient"
@@ -818,6 +818,177 @@ paths:
           description: "OK"
         403:
           description: "No permission to delete a Schedule, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+
+  /admintool/locker:
+    get:
+      tags:
+      - "Admintool"
+      description: "Returns a locker Array. Only for Admin"
+      operationId: "getLocker"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/Locker"
+        403:
+          description: "No permission to get the Lockers, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    post:
+      tags:
+      - "Admintool"
+      description: "Post a new locker entry. Only for Admin"
+      operationId: "addLocker"
+      parameters:
+        - in: "body"
+          name: "locker"
+          description: "Information to add a new Locker."
+          required: true
+          schema:
+            $ref: "#/definitions/Locker"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to add new Locker, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    put:
+      tags:
+      - "Admintool"
+      description: "Update a Locker entry. Old Locker is necessary. Only for Admin"
+      operationId: "update_Locker"
+      parameters:
+        - in: "body"
+          name: "locker"
+          description: "Information to update Locker."
+          required: true
+          schema:
+            $ref: "#/definitions/Locker"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to update a Locker, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    delete:
+      tags:
+      - "Admintool"
+      description: "Delete a Locker entry. LockerNR is necessary. Only for Admin"
+      operationId: "deleteLocker"
+      parameters:
+        - in: "body"
+          name: "locker"
+          description: "Information to delete a Locker."
+          required: true
+          schema:
+            $ref: "#/definitions/Locker"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Locker, Admin token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+  /admintool/orders:
+    get:
+      tags:
+      - "Admintool"
+      description: "Returns a orders Array. Only for Admin"
+      operationId: "getOrders"
+      parameters:
+      - $ref: "#/parameters/size"
+      - $ref: "#/parameters/offset"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+             $ref: "#/definitions/Order"
+        403:
+          description: "No permission to get the Order, Admin token needed"
+        406:
+          description: "Not Allowed"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Admintool"
+    delete:
+      tags:
+      - "Admintool"
+      description: "Delete a Order entry. OrderID is necessary. Only for Admin"
+      operationId: "deleteOrder"
+      parameters:
+        - in: "body"
+          name: "order"
+          description: "Information to delete a Order."
+          required: true
+          schema:
+            $ref: "#/definitions/Order"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Order, Admin token needed"
         406:
           description: "Not Allowed"
         404:
@@ -1021,7 +1192,6 @@ definitions:
         example: 1002
       pickup_time:
         type: "string"
-        format: "date-time"
         example: "10:30"
       served:
         type: "boolean"

@@ -4,7 +4,44 @@ const Admintool = require('./AdmintoolService');
 const url = require('url');
 const jwt = require('../jwt');
 const security  = require('../security/Functions');
+const Smartlocker = require('./SmartlockerService');
 
+
+module.exports.deleteOrder = function deleteOrder (req, res, next) {
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.deleteOrder(req.swagger.params, res, next);
+  });
+};
+
+module.exports.getOrders = function getOrders (req, res, next) {
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Smartlocker.getOrderArray(req.swagger.params, res, next);
+  });
+};
+
+module.exports.addLocker = function addLocker (req, res, next) {
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.addLocker(req.swagger.params, res, next);
+  });
+};
+
+module.exports.deleteLocker = function deleteLocker (req, res, next) {
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.deleteLocker(req.swagger.params, res, next);
+  });
+};
+
+module.exports.getLocker = function getLocker (req, res, next) {
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.getLocker(req.swagger.params, res, next);
+  });
+};
+
+module.exports.update_Locker = function update_Locker (req, res, next) {
+  security.auth(req, res, Admintool.adminRole, () =>{
+    Admintool.update_Locker(req.swagger.params, res, next);
+  });
+};
 
 module.exports.update_Schedule = function update_Schedule (req, res, next) {
   security.auth(req, res, Admintool.adminRole, () =>{
