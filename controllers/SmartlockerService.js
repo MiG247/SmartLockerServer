@@ -30,7 +30,7 @@ exports.verifyPIN = function(args, res, next) {
      }
      res.setHeader('Content-Type', 'application/json');
      res.statusCode = 200;
-     res.end(JSON.stringify(rows));
+     res.end(JSON.stringify(rows[0]));
    });
 }
 

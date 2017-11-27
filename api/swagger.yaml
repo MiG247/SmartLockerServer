@@ -273,7 +273,7 @@ paths:
             description: "unexpected error"
         x-swagger-router-controller: "Smartlocker"
   /locker/verify:
-      get:
+      post:
         tags:
         - "Smartlocker"
         description: "verifies the PIN of a Locker. LockerApp Token"
