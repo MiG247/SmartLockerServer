@@ -333,7 +333,8 @@ exports.getComboArray = function(args, res, next) {
    * offset Integer Start index of the source (optional)
    * returns List
    **/
-   let query = 'SELECT id, name, price, combo_available, photo FROM combo';
+   let query = 'SELECT id, name, price, combo_available,\
+    CONVERT(photo USING utf8)photo FROM combo';
 
    res.setHeader('Content-Type', 'application/json');
 
@@ -344,10 +345,11 @@ exports.getComboArray = function(args, res, next) {
      if(rows[0] === undefined){
               return security.responseMessage(res, 404, "No Combos. Invalied Data.");
      }else {
-
+       /*
        for (var i = 0; i < rows.length; i++) {
-         rows[i].photo = new Buffer(rows[i].photo).toString('base64');
+         rows[i].photo = new Buffer(rows[i].photo).toString('utf8');
        }
+       */
        res.statusCode = 200;
        res.end(JSON.stringify(rows));
      }
