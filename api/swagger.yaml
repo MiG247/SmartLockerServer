@@ -1179,7 +1179,7 @@ definitions:
     properties:
       id:
         type: "string"
-      comboID:
+      combo_id:
         type: "integer"
         format: "int32"
         example: 1
