@@ -16,7 +16,7 @@ exports.deleteOrder = function(args, res, next) {
    var locker_nr = escape(args.order.value.locker_nr);
    var pickup_time = args.order.value.pickup_time;
 
-   let deleteOrderQuery =  'DELETE FROM locker_schedule WHERE order_id = \''+order_id+'\' \
+   let deleteOrderQuery =  'DELETE FROM locker_schedule WHERE orders_id = \''+order_id+'\' \
    AND locker_nr = '+locker_nr+';\
    DELETE FROM orders WHERE id =\''+order_id+'\';';
    db.mysql_db.query(deleteOrderQuery, (err) =>{
