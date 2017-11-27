@@ -265,7 +265,7 @@ exports.getOrder = function(args, res, next) {
    * orderID Integer The order identifier number
    * returns Order
    **/
-   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, served, locker_nr, pin FROM orders, locker_schedule, locker\
+   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, served, locker_nr, PIN FROM orders, locker_schedule, locker\
    WHERE id = \''+escape(args.orderID.value)+'\' AND orders_id = \''+escape(args.orderID.value)+'\'\
    AND nr = locker_nr';
 
