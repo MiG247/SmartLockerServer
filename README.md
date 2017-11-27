@@ -29,7 +29,7 @@ https://nodejs.org/en/download/package-manager/
 ## Nodejs Tutorial
 http://www.tutorialspoint.com/nodejs/
 
-## Swagger erleichtert die Arbeit etwas
+## Swagger for API documentation
 http://swagger.io/
 
 
