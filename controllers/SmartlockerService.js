@@ -41,7 +41,7 @@ exports.getLockerArray = function(args, res, next) {
    *
    * returns List
    **/
-   let getLockerArrayQuery = 'SELECT nr FROM locker;';
+   let getLockerArrayQuery = 'SELECT * FROM locker;';
 
    db.mysql_db.query(getLockerArrayQuery, (err, rows) =>{
      if (err) {
