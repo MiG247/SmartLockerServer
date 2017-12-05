@@ -16,6 +16,11 @@ exports.responseMessage = function (res, statusCode, massageData) {
 }
 
 exports.decodeName = function (req, res) {
+  /*
+    Decodes the RequestValues of Token
+    from header or query
+  */
+
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
 
@@ -29,6 +34,10 @@ exports.decodeName = function (req, res) {
 }
 
 exports.auth = function (req, res, userName, cb) {
+  /*
+    Authentication procedure
+    Returns as CallBack the token
+  */
   var urlParts = url.parse(req.url, true);
   var query = urlParts.query;
 
@@ -72,6 +81,7 @@ exports.auth = function (req, res, userName, cb) {
 exports.getSalt = function(user){
   /*
     Return the stored Salt from the server.
+    As a object with user: and salt:
   */
 
   var saltData = fs.readFileSync(securityFile);
@@ -80,6 +90,7 @@ exports.getSalt = function(user){
     console.error("Error reading salt.txt.");
     return;
   }
+  // algorithm to seperate the data in lines.
   saltData = saltData.toString().split("\n");
   var re = new RegExp(user);
   var userSalt = "";
@@ -114,6 +125,7 @@ exports.sha512 = function(password, salt){
    * @function
    * @param {string} password - List of required fields.
    * @param {string} salt - Data to be validated.
+   * @return {Object}
    */
 
     var hash = crypt.createHmac('sha512', salt); /** Hashing algorithm sha512 */

@@ -282,11 +282,15 @@ paths:
           - application/json
         parameters:
           - in: "body"
-            name: "locker"
+            name: "PIN"
             description: "Locker PIN"
             required: true
             schema:
-              $ref: "#/definitions/Locker"
+              type: "object"
+              properties:
+                PIN:
+                  type: "integer"
+                  format: "int32"
         responses:
           200:
             description: "OK"
