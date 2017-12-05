@@ -92,6 +92,9 @@ exports.updateOrder = function(args, res, next) {
         return security.responseMessage(res, 500, err);
       }
 
+      //Building a LockerNr PIN combo.
+      seq = locker_nr + seq;
+
       let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
       db.mysql_db.query(updateLocker, (err) =>{
         if(err){
