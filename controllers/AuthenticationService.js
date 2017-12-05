@@ -22,7 +22,9 @@ exports.getToken = function(args, res, next){
     return security.responseMessage(res, 406, "Permission denied. Username or Password is invalied");
   }
 
+  //using sha512() function from security file
   password = security.sha512(password, userSalt.salt);
+  // sha512 returns a object with salt and the hashed password. So got to set the password right.
   password = password.passwordHash;
 
   let getUser = 'SELECT name, password, admin FROM staff WHERE name = \''+username+'\
@@ -34,9 +36,12 @@ exports.getToken = function(args, res, next){
     if (err) {
         return security.responseMessage(res, 500, err);
     }
+    //Checking for valid data
     if (rows[0] === undefined) {
       return security.responseMessage(res, 406, "Permission denied. Username or Password is invalied");
     }
+
+    //Generating a JSON Web Token
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (60*60*24), //expires in 24h
       userName: username,

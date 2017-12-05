@@ -1,10 +1,10 @@
 'use strict';
 
-const fs = require('fs');
-const db = require('../MySQL');
-const uuidv4 = require('uuid/v4');
-const security  = require('../security/Functions');
-const jwt = require('../jwt');
+const fs = require('fs'); //Filesystem
+const db = require('../MySQL'); // binding the MySQL.js script
+const uuidv4 = require('uuid/v4'); //unique id generator
+const security  = require('../security/Functions'); // binding the security functions
+const jwt = require('../jwt'); // binding the JSON Web Token script
 
 exports.verifyPIN = function(args, res, next) {
   /**
@@ -13,21 +13,20 @@ exports.verifyPIN = function(args, res, next) {
    * locker Locker Locker PIN
    * no response value expected for this operation
    **/
-   var lockerNr = escape(args.locker.value.nr);
-   var lockerPIN = escape(args.locker.value.PIN);
-
-   let getLocker = 'SELECT * FROM locker WHERE nr = '+lockerNr;
-
+   // Arguments escape() function to prevent SQL injection
+   var lockerPIN = escape(args.PIN.value.PIN);
+   let getLocker = 'SELECT * FROM locker WHERE PIN = '+lockerPIN;
+   //Database Request
    db.mysql_db.query(getLocker, (err, rows)=> {
+     //Error Handling
      if(err){
        return security.responseMessage(res, 500, err);
      }
+     //If Database does not return any Data.
      if(rows[0] === undefined){
-       return security.responseMessage(res,404, "Locker Number not found.");
-     }
-     if (rows[0].PIN != lockerPIN) {
        return security.responseMessage(res, 406, "Invalied PIN!");
      }
+     // Successfull response returns a JSON file with LockerNr and PIN
      res.setHeader('Content-Type', 'application/json');
      res.statusCode = 200;
      res.end(JSON.stringify(rows[0]));
@@ -42,7 +41,7 @@ exports.getLockerArray = function(args, res, next) {
    * returns List
    **/
    let getLockerArrayQuery = 'SELECT * FROM locker;';
-
+   //Database Request
    db.mysql_db.query(getLockerArrayQuery, (err, rows) =>{
      if (err) {
        return security.responseMessage(res, 500, err);
@@ -63,14 +62,19 @@ exports.updateOrder = function(args, res, next) {
    * locker_nr Integer The locker identifier number
    * no response value expected for this operation
    **/
-   // seq is a PIN generator
-  var seq = parseInt(Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+   // seq is a PIN generator with a four digit Number
+  var digitLength = 10000; // four digit
+  var seq = parseInt(Math.floor(Math.random() * digitLength) + digitLength).toString().substring(1);
+  // RegExp to decode the URI characters from pickup_time
   var find = '%3A';
   var re = new RegExp(find, "g");
+  // Requestarguments escape() function to prevent SQL injection
   var combo_id = escape(args.close_order.value.combo_id);
   var pickup_time = escape(args.close_order.value.pickup_time);
   var locker_nr = escape(args.close_order.value.locker_nr);
+  //Decoding the URI characters
   pickup_time = pickup_time.replace(re, ':');
+
 
   let getOrder = 'SELECT id FROM orders WHERE id = \
     (SELECT DISTINCT orders_id FROM locker_schedule, orders \
@@ -85,23 +89,19 @@ exports.updateOrder = function(args, res, next) {
     if(rows[0] === undefined){
       return security.responseMessage(res, 406, "Order not Accepted. Invalied Data.");
     }
+    //Building a LockerNr PIN combo.
+    seq = locker_nr + seq;
 
-    let updateOrder = 'UPDATE orders SET served = 1 WHERE id = \''+rows[0].id+'\';';
+    let updateOrder = 'UPDATE orders SET served = 1 WHERE id = \''+rows[0].id+'\';\
+    UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr+';';
+
     db.mysql_db.query(updateOrder, (err) =>{
       if(err){
         return security.responseMessage(res, 500, err);
       }
 
-      //Building a LockerNr PIN combo.
-      seq = locker_nr + seq;
+      return security.responseMessage(res, 200, "Order for "+pickup_time+" with combo "+combo_id+" into locker "+locker_nr+" has been served.");
 
-      let updateLocker = 'UPDATE locker SET PIN = '+seq+' WHERE nr = '+locker_nr
-      db.mysql_db.query(updateLocker, (err) =>{
-        if(err){
-          return security.responseMessage(res, 500, err);
-        }
-        return security.responseMessage(res, 200, "Order for "+pickup_time+" with combo "+combo_id+" into locker "+locker_nr+" has been served.");
-      });
     });
   });
 }
@@ -111,10 +111,12 @@ exports.updateCombo = function(args, res, next){
   * Updates a Combo availablity
   * and returns the Updated Combo Object
   */
+  // Requestarguments escape() function to prevent SQL injection
   var id = escape(args.combo.value.combo_id);
   var name = escape(args.combo.value.combo_name);
   var price = escape(args.combo.value.combo_price);
   var available = escape(args.combo.value.combo_available);
+
   let getCombo = 'SELECT id, name, price, combo_available FROM combo WHERE\
                   id ='+id+' AND name = \''+name+'\' AND price = '+price;
 
@@ -122,7 +124,7 @@ exports.updateCombo = function(args, res, next){
     if(err){
       return security.responseMessage(res, 500, err);
     }
-
+    // checking for returned data
     if(rows[0] === undefined){
       return security.responseMessage(res, 406, "Combo Not Accepted. Invalied Data.");
     }
@@ -168,10 +170,13 @@ exports.setOrder = function(args, res, next) {
    * pickupTime Date The time from schedule
    * returns Order/properties/id
    **/
+   //RegExp to decode URI characters
    var find = '%3A';
    var re = new RegExp(find, "g");
+   // Requestarguments escape() function to prevent SQL injection
    var pickupTime = escape(args.set_order.value.pickup_time);
    var comboID = escape(args.set_order.value.combo_id);
+   //Decoding URI characters from pickupTime
    pickupTime = pickupTime.replace(re, ':');
 
    let availableQuery = 'select schedule_available, combo_available from schedule, combo\
@@ -181,6 +186,9 @@ exports.setOrder = function(args, res, next) {
      if(err){
        return security.responseMessage(res, 500, err);
      }
+     /*
+     Checking for returned data, if schedule and combo are available.
+     */
      if(rows[0] === undefined){
        return security.responseMessage(res, 406, "Order Not Accepted. Invalied Data.");
      }else if(rows[0].schedule_available == 0){
@@ -191,6 +199,7 @@ exports.setOrder = function(args, res, next) {
        // check for available locker
        let getAvailableLockerQuery = 'SELECT nr FROM locker WHERE NOT nr IN \
        (SELECT locker_nr FROM locker_schedule WHERE pickup_time= \''+pickupTime+'\')';
+
        db.mysql_db.query(getAvailableLockerQuery, (err, rows) =>{
          if(err){
            return security.responseMessage(res, 500, err);
@@ -201,7 +210,7 @@ exports.setOrder = function(args, res, next) {
            insertOrderQuery = 'UPDATE schedule SET schedule_available = 0 WHERE pickup_time = \
            \''+pickupTime+'\';';
          }
-         // insert Order function
+         // insert Order function into next available locker.
          var lockerNR = rows[0].nr;
          var uuid = uuidv4();
          insertOrderQuery = insertOrderQuery+' INSERT INTO orders(id, combo_id, served) \
@@ -215,6 +224,7 @@ exports.setOrder = function(args, res, next) {
            if (err) {
              return security.responseMessage(res, 500, err);
            }
+           // generates a JSON Web Token for the unique orderID
            const payload = {
              exp: Math.floor(Date.now() / 1000) + (60*60*24), //expires in 24h
              userName: uuid,
@@ -348,11 +358,6 @@ exports.getComboArray = function(args, res, next) {
      if(rows[0] === undefined){
               return security.responseMessage(res, 404, "No Combos. Invalied Data.");
      }else {
-       /*
-       for (var i = 0; i < rows.length; i++) {
-         rows[i].photo = new Buffer(rows[i].photo).toString('utf8');
-       }
-       */
        res.statusCode = 200;
        res.end(JSON.stringify(rows));
      }
