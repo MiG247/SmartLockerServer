@@ -68,5 +68,7 @@ module.exports.updateOrder = function updateOrder (req, res, next) {
 };
 
 module.exports.getLockerArray = function getLockerArray (req, res, next) {
-  Smartlocker.getLockerArray(req.swagger.params, res, next);
+  security.auth(req, res, "Locker", () =>{
+    Smartlocker.getLockerArray(req.swagger.params, res, next);
+  });
 };
