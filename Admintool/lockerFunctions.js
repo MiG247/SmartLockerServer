@@ -15,8 +15,8 @@ exports.addLocker = function(args, res, next) {
    **/
    var locker_nr = escape(args.locker.value.nr);
    var locker_PIN = escape(args.locker.value.PIN);
-   if ((10000 <= locker_PIN) || (locker_PIN < 0)) {
-     return security.responseMessage(res, 406, "Invalied PIN, PIN has to be > -1 and < 10000!");
+   if ((locker_PIN < 0)) {
+     return security.responseMessage(res, 406, "Invalied PIN, PIN has to be > -1!");
    }
 
    let insertLockerQuery = 'INSERT INTO locker (nr, PIN) \
