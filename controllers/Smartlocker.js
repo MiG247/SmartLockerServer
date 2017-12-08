@@ -25,7 +25,7 @@ module.exports.getTimeSchedule = function getTimeSchedule (req, res, next) {
 
 module.exports.getOrder = function getOrder (req, res, next) {
   var userName = security.decodeName(req, res).userName; //userName stored in token
-  if (userName === "Clerk" ) {
+  if (userName === "Clerk" || userName === "Admin") {
     security.auth(req, res, "Clerk", () =>{
       Smartlocker.getOrder(req.swagger.params, res, next);
     });

@@ -334,8 +334,12 @@ paths:
           schema:
             items:
               $ref: "#/definitions/Token"
+        403:
+          description: "JWT Error"
         406:
           description: "Not Allowed"
+        500:
+          description: "Error on Database"
         default:
           description: "unexpected error"
     x-swagger-router-controller: "Authentication"
