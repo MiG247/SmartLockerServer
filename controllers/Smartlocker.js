@@ -5,6 +5,12 @@ const jwt = require('../jwt');
 const Smartlocker = require('./SmartlockerService');
 const security  = require('../security/Functions');
 
+module.exports.cancelOrder = function cancelOrder(req, res, next) {
+  security.auth(req, res, req.swagger.params.orderID.value, () =>{
+    Smartlocker.cancelOrder(req.swagger.params, res, next);
+  });
+}
+
 module.exports.verifyPIN = function verifyPIN (req, res, next) {
   security.auth(req, res, "Locker", () =>{
     Smartlocker.verifyPIN(req.swagger.params, res, next);
