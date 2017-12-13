@@ -141,6 +141,38 @@ paths:
               $ref: "#/definitions/ErrorModel"
         404:
           description: "Not Found"
+        406:
+          description: "Not Allowed"
+        default:
+          description: "unexpected error"
+      x-swagger-router-controller: "Smartlocker"
+    delete:
+      tags:
+      - "Smartlocker"
+      description: "Cancel an Order. OrderID is necessary. For Admin or User"
+      operationId: "cancelOrder"
+      parameters:
+        - in: "body"
+          name: "order"
+          description: "Information to cancel an Order."
+          required: true
+          schema:
+            $ref: "#/definitions/Order"
+      responses:
+        200:
+          description: "OK"
+        403:
+          description: "No permission to delete a Order, Token needed"
+        406:
+          description: "Not Allowed"
+        404:
+          description: "Not Found"
+          schema:
+             $ref: "#/definitions/ErrorModel"
+        500:
+          description: "Error on Database"
+          schema:
+            $ref: "#/definitions/ErrorModel"
         default:
           description: "unexpected error"
       x-swagger-router-controller: "Smartlocker"
@@ -1171,7 +1203,12 @@ definitions:
         format: "date-time"
         example: "10:30"
       served:
-        type: "boolean"
+        type: "integer"
+        format: "int32"
+        example: "true = 1, false = 0"
+      order_delivered:
+        type: "integer"
+        format: "int32"
         example: "true = 1, false = 0"
       locker_nr:
         type: "integer"
@@ -1202,6 +1239,9 @@ definitions:
         type: "string"
         example: "10:30"
       served:
+        type: "boolean"
+        example: "true = 1, false = 0"
+      order_delivered:
         type: "boolean"
         example: "true = 1, false = 0"
 

@@ -6,6 +6,44 @@ const uuidv4 = require('uuid/v4'); //unique id generator
 const security  = require('../security/Functions'); // binding the security functions
 const jwt = require('../jwt'); // binding the JSON Web Token script
 
+exports.cancelOrder = function (args, res, next) {
+  /**
+   * Cancels an Order
+   *
+   * orderID Integer The order identifier number
+   *
+   **/
+
+   var order_id = escape(args.orderID.value);
+   var locker_nr = escape(args.order.value.locker_nr);
+   var pickup_time = args.order.value.pickup_time;
+
+   const time_validation = 30; // in minutes
+
+   var date = new Date();
+   var hour = date.getHours();
+   var minute = date.getMinutes();
+   var current_time = (hour * 60 + minute);
+
+   var pickup_time_value = pickup_time.split(':');
+   pickup_time_value = ((pickup_time_value[0]*60)+(pickup_time_value[1]*1));
+
+   if((pickup_time_value - current_time) < time_validation){
+     return security.responseMessage(res, 406, "You can't cancel within "+time_validation+" minutes befor Order.");
+   }
+
+   let deleteOrderQuery =  'DELETE FROM locker_schedule WHERE orders_id = \''+order_id+'\' \
+   AND locker_nr = '+locker_nr+';\
+   DELETE FROM orders WHERE id =\''+order_id+'\';';
+   db.mysql_db.query(deleteOrderQuery, (err) =>{
+      if(err){
+        return security.responseMessage(res, 500, err);
+      }
+      return security.responseMessage(res, 200, "Successfully canceled your Order.");
+   });
+
+}
+
 exports.verifyPIN = function(args, res, next) {
   /**
    * verifies the PIN of a Locker. For LockerApp
@@ -14,7 +52,13 @@ exports.verifyPIN = function(args, res, next) {
    * no response value expected for this operation
    **/
    // Arguments escape() function to prevent SQL injection
+
    var lockerPIN = escape(args.PIN.value.PIN);
+   var date = new Date();
+   var hour = date.getHours();
+   var minute = date.getMinutes();
+   var time = hour+":"+minute;
+
    let getLocker = 'SELECT * FROM locker WHERE PIN = '+lockerPIN;
    //Database Request
    db.mysql_db.query(getLocker, (err, rows)=> {
@@ -26,10 +70,22 @@ exports.verifyPIN = function(args, res, next) {
      if(rows[0] === undefined){
        return security.responseMessage(res, 406, "Invalied PIN!");
      }
-     // Successfull response returns a JSON file with LockerNr and PIN
-     res.setHeader('Content-Type', 'application/json');
-     res.statusCode = 200;
-     res.end(JSON.stringify(rows[0]));
+     //Marks the last order as delivered
+     let updateOrder = "UPDATE `smartlocker_db`.`orders` \
+     SET order_delivered = 1 \
+     WHERE id = (SELECT orders_id FROM locker_schedule WHERE pickup_time < \'"+time+"\'\
+     AND locker_nr = "+rows[0].nr+" ORDER BY pickup_time DESC LIMIT 1);";
+
+     db.mysql_db.query(updateOrder, (err) => {
+       //Error Handling
+       if(err){
+         return security.responseMessage(res, 500, err);
+       }
+       // Successfull response returns a JSON file with LockerNr and PIN
+       res.setHeader('Content-Type', 'application/json');
+       res.statusCode = 200;
+       res.end(JSON.stringify(rows[0]));
+     });
    });
 }
 
@@ -148,7 +204,7 @@ exports.getOrderArray = function(args, res, next) {
    * Gets an array of 'orders' objects
    * returns List
    **/
-   let getOrderArrayQuery = 'select orders.id, orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time, orders.served\
+   let getOrderArrayQuery = 'select orders.id, orders.combo_id, combo.name, locker_schedule.locker_nr, locker_schedule.pickup_time, orders.served, orders.order_delivered\
     from orders inner join combo on orders.combo_id = combo.id \
     inner join locker_schedule on orders.id = locker_schedule.orders_id';
 
@@ -278,7 +334,7 @@ exports.getOrder = function(args, res, next) {
    * orderID Integer The order identifier number
    * returns Order
    **/
-   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, served, locker_nr, PIN FROM orders, locker_schedule, locker\
+   let query = 'SELECT distinct id, combo_id, ordered_at, pickup_time, served, order_delivered, locker_nr, PIN FROM orders, locker_schedule, locker\
    WHERE id = \''+escape(args.orderID.value)+'\' AND orders_id = \''+escape(args.orderID.value)+'\'\
    AND nr = locker_nr';
 
@@ -287,6 +343,9 @@ exports.getOrder = function(args, res, next) {
    db.mysql_db.query(query, (err, rows) => {
      if (err) {
        return security.responseMessage(res, 500, err);
+     }
+     if (rows[0] === undefined) {
+       return security.responseMessage(res, 404, "Could not find your OrderID.")
      }
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
