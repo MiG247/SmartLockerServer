@@ -5,6 +5,7 @@ const db = require('../MySQL'); // binding the MySQL.js script
 const uuidv4 = require('uuid/v4'); //unique id generator
 const security  = require('../security/Functions'); // binding the security functions
 const jwt = require('../jwt'); // binding the JSON Web Token script
+const time_validation_inMinutes = 30; // in minutes
 
 exports.cancelOrder = function (args, res, next) {
   /**
@@ -17,8 +18,8 @@ exports.cancelOrder = function (args, res, next) {
    var order_id = escape(args.orderID.value);
    var locker_nr = escape(args.order.value.locker_nr);
    var pickup_time = args.order.value.pickup_time;
+   var time_validation = time_validation_inMinutes;
 
-   const time_validation = 30; // in minutes
 
    var date = new Date();
    var hour = date.getHours();
@@ -32,7 +33,8 @@ exports.cancelOrder = function (args, res, next) {
      return security.responseMessage(res, 406, "You can't cancel within "+time_validation+" minutes befor Order.");
    }
 
-   let deleteOrderQuery =  'DELETE FROM locker_schedule WHERE orders_id = \''+order_id+'\' \
+   let deleteOrderQuery =  'UPDATE schedule SET schedule_available = 1 WHERE pickup_time = \''+pickup_time+'\';\
+   DELETE FROM locker_schedule WHERE orders_id = \''+order_id+'\' \
    AND locker_nr = '+locker_nr+';\
    DELETE FROM orders WHERE id =\''+order_id+'\';';
    db.mysql_db.query(deleteOrderQuery, (err) =>{
@@ -347,6 +349,7 @@ exports.getOrder = function(args, res, next) {
      if (rows[0] === undefined) {
        return security.responseMessage(res, 404, "Could not find your OrderID.")
      }
+     rows[0].time_to_cancel = time_validation_inMinutes;
      res.statusCode = 200;
      res.end(JSON.stringify(rows));
    });
