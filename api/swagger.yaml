@@ -132,7 +132,43 @@ paths:
         200:
           description: "OK"
           schema:
-            $ref: "#/definitions/UserOrder"
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "df7cca36-3d7a-40f4-8f06-ae03cc22f041"
+              combo_id:
+                type: "integer"
+                format: "int32"
+                example: 21
+              ordered_at:
+                type: "string"
+                format: "date-time"
+                example: "1985-04-12T23:20:50Z"
+              pickup_time:
+                type: "string"
+                format: "date-time"
+                example: "10:30"
+              served:
+                type: "integer"
+                format: "int32"
+                example: "true = 1, false = 0"
+              order_delivered:
+                type: "integer"
+                format: "int32"
+                example: "true = 1, false = 0"
+              locker_nr:
+                type: "integer"
+                format: "int32"
+                example: 1002
+              PIN:
+                type: "integer"
+                format: "int32"
+                example: 6832
+              time_to_cancel:
+                type: "integer"
+                format: "int32"
+                example: 30
         403:
             description: "No permission to view this data, Clerk or User token needed"
         500:
