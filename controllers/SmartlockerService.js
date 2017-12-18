@@ -5,7 +5,7 @@ const db = require('../MySQL'); // binding the MySQL.js script
 const uuidv4 = require('uuid/v4'); //unique id generator
 const security  = require('../security/Functions'); // binding the security functions
 const jwt = require('../jwt'); // binding the JSON Web Token script
-const time_validation_inMinutes = 30; // in minutes
+const time_validation_inMinutes = 30; // in minutes, Sets the time that an User has to be able to cancel an Order
 
 exports.cancelOrder = function (args, res, next) {
   /**
